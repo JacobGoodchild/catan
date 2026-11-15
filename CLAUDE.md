@@ -2,7 +2,7 @@
 
 ## Summary (latest checkpoint)
 
-**Done:** a complete, playable game against 2 or 3 computer players, start to finish, on the live site. The rules engine is pure logic with one `step(state, action)` entry point, 20 rule tests and a 2,000-game bot simulation (all pass). The board, pieces, tokens, harbours, robber and cards are drawn in SVG to match the 5th edition. The dice are 3D (three.js + cannon-es) with fair results from `crypto`. There are card flight animations, a collapsible log, trading with the bank, harbours and players (including counter-offers both ways), settings behind the cog, and automatic save and resume.
+**Done:** a complete, playable game against 2 or 3 computer players, start to finish, on the live site. The rules engine is pure logic with one `step(state, action)` entry point, 26 rule tests and a 2,000-game bot simulation (all pass). Full games have also been played through the real browser interface by an automated clicker, with no errors. The board, pieces, tokens, harbours, robber and cards are drawn in SVG to match the 5th edition. The dice are 3D (three.js + cannon-es) with fair results from `crypto`. There are card flight animations, a collapsible log, trading with the bank, harbours and players (including counter-offers both ways), settings behind the cog, and automatic save and resume.
 
 **Still to do:** see the unticked items below. Mainly: more art polish (resource card pictures, development card illustrations), smarter Hard bots, a fuller tablet layout, and more play-testing by hand.
 
@@ -39,9 +39,14 @@
 - [x] Sound (optional, quiet)
 - [ ] Polish passes with screenshots (two done: board vs rulebook, tablet width)
 - [ ] Richer resource and development card illustrations
-- [ ] Hard bots: only slightly stronger than Normal in simulation (about 85 v 79 wins in 200 games). Needs better planning.
+- [ ] Hard bots: now clearly stronger than Normal in simulation (about 95 v 68 wins in 200 mixed games; Easy 37), but still simple heuristics. More planning would help (e.g. aiming for specific harbours, holding back cards from the leader).
 - [ ] Tablet layout: works at 1024 wide but the action row wraps
-- [ ] Production animation from hex to hand: built, needs checking by eye at each speed
+- [x] Production animation from hex to hand: checked by screenshot mid-flight
+- [x] Starting Set-up for Beginners option (fixed pieces)
+- [x] Direct bank/harbour trade row; incoming offers in the prompt bar, not a modal
+- [x] Keyboard shortcuts: R roll, E end turn, T trade, D development card (shown in button tooltips)
+- [ ] Optional house rules (none yet; all would be off by default)
+- [ ] Dark theme for the interface (groundwork has one; not attempted)
 
 ## Rules decisions
 

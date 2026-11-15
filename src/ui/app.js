@@ -330,7 +330,8 @@ function renderActions() {
   const main = me && game.phase === 'main' && !game.trade && !busy;
   const hand = game.hidden.hands[human];
   const pl = game.players[human];
-  const btn = (id, label, enabled, extra = '') => `<button class="button ${extra} ${mode === id ? 'pressed' : ''}" data-act="${id}" ${enabled ? '' : 'disabled'}>${label}</button>`;
+  const keys = { roll: 'R', end: 'E', trade: 'T', dev: 'D' };
+  const btn = (id, label, enabled, extra = '') => `<button class="button ${extra} ${mode === id ? 'pressed' : ''}" data-act="${id}" ${enabled ? '' : 'disabled'}${keys[id] ? ` title="${label} (${keys[id]})"` : ''}>${label}</button>`;
   const can = {
     roll: me && game.phase === 'roll' && !busy,
     road: main && pl.roadsLeft > 0 && canAfford(hand, COSTS.road) && legalRoadSpots(game, human).length > 0,
@@ -716,7 +717,15 @@ $('#prompt').addEventListener('click', (ev) => {
   if (b.dataset.inReject !== undefined) act({ type: 'respondTrade', player: human, response: 'reject' });
   if (b.dataset.inCounter !== undefined) { incomingShown = null; openIncomingTrade(); }
 });
-document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && mode) { mode = null; render(); } });
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && mode) { mode = null; render(); return; }
+  if (dlg.open || e.metaKey || e.ctrlKey || e.altKey || /INPUT|SELECT|TEXTAREA/.test(document.activeElement?.tagName || '')) return;
+  const map = { r: 'roll', e: 'end', t: 'trade', d: 'dev' };
+  const k = map[e.key.toLowerCase()];
+  if (!k) return;
+  const b = document.querySelector(`#actions [data-act="${k}"]`);
+  if (b && !b.disabled) { e.preventDefault(); b.click(); }
+});
 
 $('#logToggle').addEventListener('click', () => {
   const box = $('#logBox');
