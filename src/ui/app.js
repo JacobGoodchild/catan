@@ -172,7 +172,7 @@ function handleEvents(events) {
       case 'cancelTrade': addLog('No trade.'); break;
       case 'longestRoad': flySpecial('longestRoad', e.from, e.to); addLog(e.to === null ? 'Longest Road is set aside.' : `${subj(e.to)} ${e.to === human ? 'take' : 'takes'} Longest Road.`, 'special'); break;
       case 'largestArmy': flySpecial('largestArmy', e.from, e.to); addLog(`${subj(e.to)} ${e.to === human ? 'take' : 'takes'} Largest Army.`, 'special'); break;
-      case 'turn': addLog(`${possessive(e.player)} turn.`, 'turn'); break;
+      case 'turn': addLog(`${possessive(e.player)} turn.`, 'turn'); if (e.player === human) sound.play('turn'); break;
       case 'win': addLog(`${subj(e.player)} ${e.player === human ? 'win' : 'wins'} with ${e.vp} points.`, 'win'); break;
     }
   }

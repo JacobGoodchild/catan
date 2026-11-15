@@ -34,6 +34,14 @@ export const sound = {
     if (kind === 'card') noise(c, 0.12, { freq: 3200, q: 0.6, gain: 0.05 });
     else if (kind === 'piece') knock(c, { freq: 260, gain: 0.1 });
     else if (kind === 'road') knock(c, { freq: 340, gain: 0.07 });
+    else if (kind === 'turn') {
+      for (const [f, t] of [[523, 0], [659, 0.12]]) {
+        const o = c.createOscillator(); o.type = 'sine'; o.frequency.value = f;
+        const g = c.createGain(); const at = c.currentTime + t;
+        g.gain.setValueAtTime(0.0001, at); g.gain.exponentialRampToValueAtTime(0.035, at + 0.02); g.gain.exponentialRampToValueAtTime(0.0001, at + 0.5);
+        o.connect(g).connect(c.destination); o.start(at); o.stop(at + 0.55);
+      }
+    }
     else if (kind === 'die') knock(c, { freq: 500 + Math.random() * 300, gain: 0.05 * (opts.v || 1) });
   },
 };
