@@ -5,7 +5,7 @@ import { GEO } from './geometry.js';
 import { PIPS } from './geometry.js';
 import {
   RESOURCES, TERRAIN_RESOURCE, COSTS, viewFor, legalSettlementSpots, legalRoadSpots, legalCitySpots,
-  harbourRatios, canAfford, handTotal, victoryPoints,
+  harbourRatios, canAfford, handTotal, victoryPoints, longestRoadFor,
 } from './rules.js';
 
 const LEVELS = { easy: { noise: 0.6, trade: false, plan: false }, normal: { noise: 0.15, trade: true, plan: true }, hard: { noise: 0.02, trade: true, plan: true } };
@@ -72,19 +72,25 @@ function pickBest(list, score) {
 }
 
 // Distance (in roads) from my network to a vertex, over free paths. Used for road planning.
-function roadTowards(view, p, targets) {
+function roadTowards(view, p, targets, score) {
   const legal = legalRoadSpots(view, p);
   if (!legal.length) return null;
-  const targetSet = new Set(targets);
-  // BFS from each legal road's far end.
-  let best = null, bestD = Infinity;
-  for (const e of legal) {
-    for (const v of GEO.edges[e].v) {
-      const d = bfs(view, p, v, targetSet);
-      if (d < bestD) { bestD = d; best = e; }
+  // Aim at the few best free spots, not just the nearest one.
+  let aims = targets;
+  if (score) aims = targets.map((v) => [v, score(v)]).sort((a, b) => b[1] - a[1]).slice(0, 6).map((x) => x[0]);
+  let best = null, bestS = -Infinity;
+  for (const aim of aims) {
+    const set = new Set([aim]);
+    for (const e of legal) {
+      for (const v of GEO.edges[e].v) {
+        const d = bfs(view, p, v, set);
+        if (d === Infinity) continue;
+        const sc = (score ? score(aim) : 10) / (d + 1);
+        if (sc > bestS) { bestS = sc; best = e; }
+      }
     }
   }
-  return bestD <= 4 ? best : null;
+  return best;
 }
 function bfs(view, p, start, targets) {
   const seen = new Set([start]);
@@ -326,7 +332,7 @@ export function botAction(state, p, rng = Math.random, level = 'normal') {
   const settleSpots = legalSettlementSpots(view, p);
   const wantRoad = pl.roadsLeft > 0 && canAfford(hand, COSTS.road) && (settleSpots.length === 0 || (pl.settlementsLeft === 0 ? false : rng() < 0.15));
   if (wantRoad && pl.settlementsLeft > 0 && !(g === 'city' && !canAfford(hand, { ...COSTS.road, ...{ grain: 2, ore: 3 } }) && hand.ore + hand.grain >= 4)) {
-    const e = roadTowards(view, p, settlementTargets(view, p));
+    const e = roadTowards(view, p, settlementTargets(view, p), L.plan ? (v) => scoreVertex(view, p, v, weights, () => 0.5, level) : null);
     if (e !== null) return { type: 'buildRoad', player: p, edge: e };
   }
   if (view.devDeckCount > 0 && canAfford(hand, COSTS.dev) && (g === 'dev' || g === 'city' && hand.ore >= 1 && hand.wool >= 1 && rng() < 0.5 || handTotal(hand) >= 7)) {
@@ -335,7 +341,12 @@ export function botAction(state, p, rng = Math.random, level = 'normal') {
   // Late game: if nothing else to do with roads, build towards longest road.
   if (pl.roadsLeft > 0 && canAfford(hand, COSTS.road) && handTotal(hand) >= 6 && L.plan) {
     const legal = legalRoadSpots(view, p);
-    if (legal.length) return { type: 'buildRoad', player: p, edge: legal[Math.floor(rng() * legal.length)] };
+    const before = longestRoadFor(view, p);
+    const best = pickBest(legal, (e) => { view.roads[e] = p; const l = longestRoadFor(view, p); delete view.roads[e]; return l + rng() * 0.1; });
+    if (best !== null) {
+      view.roads[best] = p; const after = longestRoadFor(view, p); delete view.roads[best];
+      if (after > before) return { type: 'buildRoad', player: p, edge: best };
+    }
   }
 
   // Trade with the bank towards the goal.
