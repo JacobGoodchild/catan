@@ -276,7 +276,7 @@ function renderPlayers() {
     const cards = handTotal(game.hidden.hands[id]);
     const devs = game.hidden.dev[id].length;
     const active = id === game.current && game.phase !== 'gameOver';
-    return `<div class="player panel ${active ? 'active' : ''}" data-player="${id}" style="--pc:${c.base};--pcd:${c.dark}">
+    return `<div class="player panel ${active ? 'active' : ''}" data-player="${id}" style="--pc:${pl.colour === 'white' ? '#a39b89' : c.base};--pcd:${c.dark}">
       <div class="p-head"><svg viewBox="-16 -18 32 32" class="p-icon">${settlementSVG(pl.colour, 0, 0, 1)}</svg>
         <span class="p-name">${isMe ? 'You' : pl.name}</span>
         <span class="p-vp" title="Victory points${isMe ? ' (including hidden cards)' : ' (visible)'}">${vp}<small> VP</small></span></div>
