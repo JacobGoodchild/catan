@@ -34,7 +34,7 @@ export function sharedDefs() {
   return `
   <filter id="paint" x="-5%" y="-5%" width="110%" height="110%">
     <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="3" result="n"/>
-    <feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.22 0" result="a"/>
+    <feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.34 0" result="a"/>
     <feComposite in="a" in2="SourceGraphic" operator="in" result="t"/>
     <feBlend in="SourceGraphic" in2="t" mode="multiply"/>
   </filter>
@@ -49,11 +49,18 @@ export function sharedDefs() {
     <feColorMatrix in="n" type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 1.1 -0.45"/>
   </filter>
   <radialGradient id="tokenGrad" cx="40%" cy="35%" r="70%">
-    <stop offset="0" stop-color="#fbf1d6"/><stop offset="0.7" stop-color="#efdcb0"/><stop offset="1" stop-color="#d9c08a"/>
+    <stop offset="0" stop-color="#f6e6bd"/><stop offset="0.65" stop-color="#e8cf98"/><stop offset="1" stop-color="#cfae6c"/>
   </radialGradient>
   <radialGradient id="robberGrad" cx="35%" cy="30%" r="75%">
     <stop offset="0" stop-color="#d6d6d4"/><stop offset="0.55" stop-color="#9a9b99"/><stop offset="1" stop-color="#5d5e5c"/>
   </radialGradient>
+  <radialGradient id="vig" cx="50%" cy="45%" r="58%">
+    <stop offset="0.55" stop-color="#2a1a08" stop-opacity="0"/><stop offset="1" stop-color="#2a1a08" stop-opacity="0.38"/>
+  </radialGradient>
+  <radialGradient id="sheen" cx="35%" cy="25%" r="60%">
+    <stop offset="0" stop-color="#fff8dc" stop-opacity="0.22"/><stop offset="1" stop-color="#fff8dc" stop-opacity="0"/>
+  </radialGradient>
+  <filter id="blur6"><feGaussianBlur stdDeviation="6"/></filter>
   <linearGradient id="seaGrad" x1="0" y1="0" x2="1" y2="1">
     <stop offset="0" stop-color="#2f97d4"/><stop offset="0.5" stop-color="#3aa6dd"/><stop offset="1" stop-color="#2486c4"/>
   </linearGradient>
@@ -85,7 +92,7 @@ function sheep(x, y, s) {
 }
 
 const TERRAIN_BASE = {
-  forest: '#2f5a26', pasture: '#8cc14a', fields: '#d8a935', hills: '#bf6c35', mountains: '#9b97ab', desert: '#e4cf9c',
+  forest: '#2f5a26', pasture: '#8cc14a', fields: '#d8a935', hills: '#a95a2b', mountains: '#9b97ab', desert: '#e4cf9c',
 };
 
 // Returns SVG for the painted interior of a tile centred at (0,0), size 100. Clip outside.
@@ -131,7 +138,8 @@ export function terrainArt(terrain, seed) {
       parts.push(`<g><ellipse cx="${x + 2}" cy="${y + 6}" rx="6" ry="2" fill="#6b4f16" opacity="0.4"/><path d="M${x - 4},${y + 5} L${x},${y - 7} L${x + 4},${y + 5} Z" fill="#f2d679" stroke="#a7802a" stroke-width="0.8"/></g>`);
     }
   } else if (terrain === 'hills') {
-    parts.push(`<ellipse cx="5" cy="5" rx="62" ry="48" fill="#a4552a" opacity="0.9" filter="url(#soft)"/>`);
+    for (let i = 0; i < 26; i++) parts.push(`<ellipse cx="${-90 + r() * 180}" cy="${-90 + r() * 180}" rx="${10 + r() * 22}" ry="${6 + r() * 12}" fill="${r() < 0.5 ? '#c27238' : '#8d4721'}" opacity="0.45" filter="url(#soft)"/>`);
+    parts.push(`<ellipse cx="5" cy="5" rx="62" ry="48" fill="#86421f" opacity="0.8" filter="url(#soft)"/>`);
     for (let i = 0; i < 4; i++) {
       parts.push(`<ellipse cx="5" cy="${5 + i * 3}" rx="${55 - i * 12}" ry="${40 - i * 9}" fill="none" stroke="${i % 2 ? '#d78a50' : '#9a5228'}" stroke-width="${6 - i}" opacity="${0.35 + i * 0.08}" stroke-dasharray="${30 + i * 10} ${8 + i * 4}"/>`);
     }

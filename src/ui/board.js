@@ -29,14 +29,17 @@ export function createBoard(svg) {
     parts.push(`<polygon points="${inner.join(' ')}" fill="none" stroke="#7cc6ec" stroke-width="1.5" opacity="0.6"/>`);
     // Shallow water and sandy coast under the tiles.
     for (let i = 0; i < 19; i++) { const [x, y] = hexXY(i); parts.push(`<polygon points="${hexPoints(x, y, 128)}" fill="#6cc0e6" opacity="0.55"/>`); }
-    for (let i = 0; i < 19; i++) { const [x, y] = hexXY(i); parts.push(`<polygon points="${hexPoints(x, y, 112)}" fill="#ead6a0"/>`); }
+    parts.push(`<g filter="url(#blur6)" opacity="0.8">${[...Array(19).keys()].map((i) => { const [x, y] = hexXY(i); return `<polygon points="${hexPoints(x, y, 118)}" fill="#e9f6fb"/>`; }).join('')}</g>`);
+    for (let i = 0; i < 19; i++) { const [x, y] = hexXY(i); parts.push(`<polygon points="${hexPoints(x, y, 113)}" fill="#e6cf92"/>`); }
+    for (let i = 0; i < 19; i++) { const [x, y] = hexXY(i); parts.push(`<polygon points="${hexPoints(x, y, 108)}" fill="#efdcab"/>`); }
     // Tiles.
     state.board.hexes.forEach((h, i) => {
       const [x, y] = hexXY(i);
       parts.push(`<clipPath id="clip-h${i}"><polygon points="${hexPoints(0, 0, 93)}"/></clipPath>`);
       parts.push(`<g transform="translate(${x},${y})" data-hex="${i}">
         <polygon points="${hexPoints(0, 0, 100)}" fill="#e9d7a4" stroke="#b49b62" stroke-width="1.5"/>
-        <g clip-path="url(#clip-h${i})" filter="url(#paint)">${terrainArt(h.terrain, i * 7 + h.terrain.length)}</g>
+        <g clip-path="url(#clip-h${i})"><g filter="url(#paint)">${terrainArt(h.terrain, i * 7 + h.terrain.length)}</g>
+          <polygon points="${hexPoints(0, 0, 93)}" fill="url(#sheen)"/><polygon points="${hexPoints(0, 0, 93)}" fill="url(#vig)"/></g>
         <polygon points="${hexPoints(0, 0, 93)}" fill="none" stroke="#f3e6bf" stroke-width="2" opacity="0.7"/>
       </g>`);
     });

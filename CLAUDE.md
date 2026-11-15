@@ -2,7 +2,13 @@
 
 ## Summary (latest checkpoint)
 
-_Updated at each checkpoint. See the checklist below for detail._
+**Done:** a complete, playable game against 2 or 3 computer players, start to finish, on the live site. The rules engine is pure logic with one `step(state, action)` entry point, 20 rule tests and a 2,000-game bot simulation (all pass). The board, pieces, tokens, harbours, robber and cards are drawn in SVG to match the 5th edition. The dice are 3D (three.js + cannon-es) with fair results from `crypto`. There are card flight animations, a collapsible log, trading with the bank, harbours and players (including counter-offers both ways), settings behind the cog, and automatic save and resume.
+
+**Still to do:** see the unticked items below. Mainly: more art polish (resource card pictures, development card illustrations), smarter Hard bots, a fuller tablet layout, and more play-testing by hand.
+
+**Worth testing:** a full game on each difficulty; rolling a 7 with more than 7 cards; trading (offer, counter, bank and harbour); playing each development card; Longest Road changing hands; reload mid-game to check resume.
+
+**Dev tools:** `tools/board-preview.html` (board only, `?b=variable` for a random board) and `tools/dice-preview.html?v=6,3`. Add `?auto` to the main page to let a bot play your seat (soak test; doesn't save). Tests: `npm test` (set `SIM_GAMES=200` for a quicker run).
 
 ## Plan
 
@@ -16,22 +22,26 @@ _Updated at each checkpoint. See the checklist below for detail._
 
 - [x] Placeholder page and `.nojekyll` pushed to `main`
 - [x] Rulebook saved to `reference/catanBaseRules.pdf` and read in full
-- [ ] Reference images gathered in `reference/images/` (git-ignored)
-- [ ] Engine: geometry
-- [ ] Engine: rules (setup, roll, production, shortage, 7/discard/robber, building, dev cards, longest road, largest army, trading, winning)
-- [ ] Engine: unit tests for each tricky rule
-- [ ] Engine: bots (easy, normal, hard)
-- [ ] Engine: thousands-of-games simulation test
-- [ ] Board art (terrain tiles, tokens, sea frame, harbours, pieces, robber)
-- [ ] Playable game in browser: you against 2 or 3 bots
-- [ ] Hand, cards, Building Costs card, opponent panels, log, controls
-- [ ] Trading UI (bank, harbours, players, counter-offers)
-- [ ] Settings behind cog, saved to localStorage
-- [ ] Save and resume
-- [ ] Dice overlay with physics (three.js + cannon-es)
-- [ ] Card and piece animations, robber movement, special cards moving
-- [ ] Sound (optional, quiet)
-- [ ] Polish passes with screenshots
+- [x] Reference images gathered in `reference/images/` (git-ignored): Wikimedia Commons table photos plus high-resolution crops of the 2020 rulebook art
+- [x] Engine: geometry
+- [x] Engine: rules (setup, roll, production, shortage, 7/discard/robber, building, dev cards, longest road, largest army, trading, winning)
+- [x] Engine: unit tests for each tricky rule
+- [x] Engine: bots (easy, normal, hard)
+- [x] Engine: thousands-of-games simulation test
+- [x] Board art (terrain tiles, tokens, sea frame, harbours, pieces, robber)
+- [x] Playable game in browser: you against 2 or 3 bots
+- [x] Hand, cards, Building Costs card, opponent panels, log, controls
+- [x] Trading UI (bank, harbours, players, counter-offers)
+- [x] Settings behind cog, saved to localStorage
+- [x] Save and resume
+- [x] Dice overlay with physics (three.js + cannon-es)
+- [x] Card and piece animations, robber movement, special cards moving
+- [x] Sound (optional, quiet)
+- [ ] Polish passes with screenshots (two done: board vs rulebook, tablet width)
+- [ ] Richer resource and development card illustrations
+- [ ] Hard bots: only slightly stronger than Normal in simulation (about 85 v 79 wins in 200 games). Needs better planning.
+- [ ] Tablet layout: works at 1024 wide but the action row wraps
+- [ ] Production animation from hex to hand: built, needs checking by eye at each speed
 
 ## Rules decisions
 
@@ -47,4 +57,14 @@ _Updated at each checkpoint. See the checklist below for detail._
 Every change is an action `{ type, player, ... }` passed to `step(state, action, rng)`, which validates and mutates. Hidden info (hands, dev cards, the deck) lives in `state.hidden`; `viewFor(state, player)` produces the redacted view a client should see. A Cloudflare Durable Object would hold the authoritative state, run `step`, roll dice itself (ignore client-supplied dice), and push `viewFor` to each socket.
 
 ## Known issues
+
+- Sound is synthesised with Web Audio (no files). It's off by default; switch on in settings.
+- The 3D dice fall back to flat dice if WebGL is missing; a 6-second safety timeout stops a dice failure from stalling the game.
+- In the browser the full state (including bots' hands) lives in memory. Bots only ever read `viewFor(state, seat)`, so they don't cheat, but a curious player could peek in the console. Fine for single player; the server version will fix it.
+
+## Other decisions
+
+- **Dice fairness.** `cryptoDie()` rejection-samples `crypto.getRandomValues` for each die. The throw is simulated off-screen with cannon-es, then the die faces are renumbered (opposite faces still add to 7) so the face that lands up shows the chosen value, and the recorded throw is replayed.
+- **Bot names.** Bots are named by colour (Blue, White, Orange) and you are always red, in a random seat, so you don't always go first.
+- **No build step.** three.js 0.160.0 and cannon-es 0.20.0 are vendored in `vendor/`.
 
