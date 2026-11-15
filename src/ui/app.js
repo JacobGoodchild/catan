@@ -165,10 +165,10 @@ function handleEvents(events) {
       case 'bankTrade': addLog(`${subj(e.player)} traded ${cardsText(e.give)} for ${cardsText(e.get)} ${e.ratio < 4 ? 'at a harbour' : 'with the bank'}.`); sound.play('card'); break;
       case 'offerTrade': addLog(`${subj(e.player)} ${e.player === human ? 'offer' : 'offers'} ${cardsText(e.give)} for ${cardsText(e.get)}.`); break;
       case 'respondTrade':
-        if (e.player !== human) addLog(`${subj(e.player)} ${e.response === 'accept' ? 'accepts' : e.response === 'reject' ? 'declines' : `counters: ${cardsText(e.response.get)} for ${cardsText(e.response.give)}`}.`);
+        if (e.player !== human && e.response !== 'reject') addLog(`${subj(e.player)} ${e.response === 'accept' ? 'accepts' : `counters: ${cardsText(e.response.get)} for ${cardsText(e.response.give)}`}.`);
         break;
       case 'trade': addLog(`${subj(e.player)} traded ${cardsText(e.give)} for ${cardsText(e.get)} with ${e.with === human ? 'you' : nameOf(e.with)}.`); sound.play('card'); break;
-      case 'cancelTrade': break;
+      case 'cancelTrade': addLog('No trade.'); break;
       case 'longestRoad': flySpecial('longestRoad', e.from, e.to); addLog(e.to === null ? 'Longest Road is set aside.' : `${subj(e.to)} ${e.to === human ? 'take' : 'takes'} Longest Road.`, 'special'); break;
       case 'largestArmy': flySpecial('largestArmy', e.from, e.to); addLog(`${subj(e.to)} ${e.to === human ? 'take' : 'takes'} Largest Army.`, 'special'); break;
       case 'turn': addLog(`${possessive(e.player)} turn.`, 'turn'); break;
