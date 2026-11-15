@@ -131,6 +131,8 @@ export function newGame(opts, rng) {
       deck: shuffle(DEV_DECK, rng),
     },
     playedDev: players.map(() => []), // public: types of dev cards played (knights and progress)
+    // Public estimate of each hand: what the table saw taken and spent. Steals are hidden, so it can drift.
+    seen: players.map(() => emptyHand()),
   };
   if (fixedStart) {
     const g = state;
@@ -144,7 +146,7 @@ export function newGame(opts, rng) {
         if (i === 1) {
           for (const h of GEO.vertices[v].hexes) {
             const res = TERRAIN_RESOURCE[g.board.hexes[h].terrain];
-            if (res) { g.hidden.hands[pl.id][res]++; g.bank[res]--; }
+            if (res) { g.hidden.hands[pl.id][res]++; g.bank[res]--; g.seen[pl.id][res]++; }
           }
         }
       });
@@ -296,7 +298,13 @@ export function step(state, action, rng = Math.random) {
   return { ok: true, events };
 }
 
+function seenAdd(state, p, cards, sign) {
+  if (!state.seen) return;
+  for (const [k, n] of Object.entries(cards)) state.seen[p][k] = Math.max(0, state.seen[p][k] + sign * n);
+}
+
 function take(state, p, cost, events, reason) {
+  seenAdd(state, p, cost, -1);
   const hand = state.hidden.hands[p];
   for (const [k, n] of Object.entries(cost)) {
     hand[k] -= n;
@@ -306,6 +314,7 @@ function take(state, p, cost, events, reason) {
 }
 
 function gain(state, p, cards, events, extra = {}) {
+  seenAdd(state, p, cards, 1);
   const hand = state.hidden.hands[p];
   for (const [k, n] of Object.entries(cards)) {
     hand[k] += n;
@@ -582,6 +591,7 @@ function apply(state, a, rng, events) {
       if (!validCards(a.cards) || cardCount(a.cards) !== need) return `Must discard ${need}`;
       if (!canAfford(hand, a.cards)) return 'Not in hand';
       for (const [k, n] of Object.entries(a.cards)) { hand[k] -= n; state.bank[k] += n; }
+      seenAdd(state, p, a.cards, -1);
       events.push({ type: 'discard', player: p, cards: { ...a.cards }, count: need });
       delete state.pendingDiscards[p];
       if (!Object.keys(state.pendingDiscards).length) {
@@ -658,6 +668,8 @@ function apply(state, a, rng, events) {
           if (n > 0) {
             state.hidden.hands[o.id][a.resource] = 0;
             hand[a.resource] += n;
+            seenAdd(state, o.id, { [a.resource]: state.seen ? state.seen[o.id][a.resource] : 0 }, -1);
+            seenAdd(state, p, { [a.resource]: n }, 1);
             events.push({ type: 'transfer', from: o.id, to: p, cards: { [a.resource]: n }, reason: 'monopoly' });
           }
         }
@@ -702,6 +714,7 @@ function apply(state, a, rng, events) {
       if (state.bank[get] < 1) return 'Bank has none';
       hand[give] -= ratio; state.bank[give] += ratio;
       hand[get] += 1; state.bank[get] -= 1;
+      seenAdd(state, p, { [give]: ratio }, -1); seenAdd(state, p, { [get]: 1 }, 1);
       events.push({ type: 'bankTrade', player: p, give: { [give]: ratio }, get: { [get]: 1 }, ratio });
       return null;
     }
@@ -748,6 +761,8 @@ function apply(state, a, rng, events) {
       if (!canAfford(hand, terms.give) || !canAfford(oh, terms.get)) return 'Cards no longer available';
       for (const [k, n] of Object.entries(terms.give)) { hand[k] -= n; oh[k] += n; }
       for (const [k, n] of Object.entries(terms.get)) { oh[k] -= n; hand[k] += n; }
+      seenAdd(state, p, terms.give, -1); seenAdd(state, o, terms.give, 1);
+      seenAdd(state, o, terms.get, -1); seenAdd(state, p, terms.get, 1);
       events.push({ type: 'trade', player: p, with: o, give: { ...terms.give }, get: { ...terms.get } });
       state.trade = null;
       return null;

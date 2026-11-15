@@ -310,12 +310,11 @@ export function botAction(state, p, rng = Math.random, level = 'normal') {
     if (picks.length === n2 && canAfford(view.bank, cnt)) return { type: 'playDev', player: p, card: 'yearOfPlenty', resources: picks };
   }
   if (playable('monopoly')) {
-    // Guess which resource others hold most of from what they've been seen to receive is hard; use board production.
-    const prodAll = { brick: 0, lumber: 0, wool: 0, grain: 0, ore: 0 };
-    for (const o of view.players) if (o.id !== p) { const pr = myProduction(view, o.id); for (const r of RESOURCES) prodAll[r] += pr[r]; }
-    const r = pickBest(RESOURCES, (x) => prodAll[x] * ((cost[x] || 0) > hand[x] ? 1.5 : 1));
-    const othersCards = view.hidden.handCounts.reduce((a, b, i) => a + (i === p ? 0 : b), 0);
-    if (othersCards >= 6) return { type: 'playDev', player: p, card: 'monopoly', resource: r };
+    // Use what the table has seen each opponent collect and spend.
+    const est = { brick: 0, lumber: 0, wool: 0, grain: 0, ore: 0 };
+    for (const o of view.players) if (o.id !== p && view.seen) for (const r of RESOURCES) est[r] += view.seen[o.id][r];
+    const r = pickBest(RESOURCES, (x) => est[x] * ((cost[x] || 0) > hand[x] ? 1.5 : 1));
+    if (est[r] >= 3) return { type: 'playDev', player: p, card: 'monopoly', resource: r };
   }
   if (playable('roadBuilding') && pl.roadsLeft >= 1) {
     if (roadTowards(view, p, settlementTargets(view, p)) !== null) return { type: 'playDev', player: p, card: 'roadBuilding' };

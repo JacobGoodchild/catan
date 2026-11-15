@@ -76,6 +76,8 @@ Every change is an action `{ type, player, ... }` passed to `step(state, action,
 
 ## Other decisions
 
+- **Public card tally (`state.seen`).** Tracks what the table has seen each player collect, spend, trade and discard, as players do in the real game. Steals are hidden, so it drifts (about 0.37 cards out per card held in simulation). Bots use it for Monopoly. It's public, so it's safe to send to every client later.
+
 - **Static board drawn once.** Sea, tiles, harbours and tokens are rendered into one SVG image (blob URL) when the board is created; pieces, robber, glows and highlights are live SVG on top. Raised the frame rate with highlights showing from about 42 to 56 in headless Chromium.
 
 - **Dice fairness.** `cryptoDie()` rejection-samples `crypto.getRandomValues` for each die. The throw is simulated off-screen with cannon-es, then the die faces are renumbered (opposite faces still add to 7) so the face that lands up shows the chosen value, and the recorded throw is replayed.
