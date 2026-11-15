@@ -25,7 +25,10 @@ export async function rollDice(dice, { speed = 1, sound: on = false } = {}) {
   const d3 = reduce ? null : await load3d();
   if (d3) {
     try {
-      await d3.throwDice(el, dice, { speed, onHit: (v) => sound.play('die', { v }) });
+      await Promise.race([
+        d3.throwDice(el, dice, { speed, onHit: (v) => sound.play('die', { v }) }),
+        new Promise((r) => setTimeout(r, 6000)),
+      ]);
     } catch (e) { console.warn(e); }
   } else {
     el.innerHTML = `<div class="flat-dice"><div class="die-flat">${dieFace(dice[0], 'red')}</div><div class="die-flat">${dieFace(dice[1], 'yellow')}</div></div>`;

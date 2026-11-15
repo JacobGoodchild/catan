@@ -1,0 +1,8 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="../src/ui/style.css"></head>
+<body style="background:#ebe6da"><div id="dice" class="dice-overlay" hidden></div>
+<script type="module">
+import { rollDice } from '../src/ui/dice.js';
+const v = (new URLSearchParams(location.search).get('v') || '6,3').split(',').map(Number);
+window.done = false;
+rollDice(v, { speed: 2 }).then(() => (window.done = true));
+</script></body></html>
