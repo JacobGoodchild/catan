@@ -46,7 +46,7 @@
 ## Rules decisions
 
 - **Combined trade/build phase.** The Almanac recommends it for experienced players ("Combined Trade/Build Phase"), so after rolling you can trade and build in any order.
-- **Beginner map.** Uses the terrain, numbers and harbours of Illustration A, but players still place their starting settlements in snake order (the brief asks for snake setup). The fixed beginner starting positions are not used.
+- **Beginner map.** Two options: "Beginner map" uses the terrain, numbers and harbours of Illustration A with normal snake-order placement (the brief asks for snake setup). "Beginner map and pieces" is the rulebook's Starting Set-up for Beginners: the 8 fixed settlements and roads from Illustration A, starting resources from the starred settlements, and the first player rolls straight away. Positions were read from the illustration and checked against the rulebook's example (Blue gets brick, lumber and ore). With 3 players the rulebook drops red, but you are always red here, so orange's pieces are the ones left off.
 - **Variable map.** Terrain shuffled; harbours shuffled onto the 9 fixed frame positions; number tokens laid A–R from a random corner, anticlockwise towards the centre, skipping the desert (Almanac, "Set-up, Variable").
 - **Robbing.** Any opponent with a building on the robber's hex can be chosen, even with no cards (Almanac: "If that player has no cards, you get nothing"). If only one such opponent, they're robbed automatically.
 - **Win check.** Only for the player whose turn it is, after each of their actions (including the roll). Hidden VP cards count.

@@ -71,6 +71,15 @@ export function makeBoard(kind, rng) {
   return { hexes, harbours, robber };
 }
 
+// Starting Set-up for Beginners (Illustration A): [vertex, road edge] per colour. The second is the starred one,
+// which gives the starting resources.
+export const BEGINNER_START = {
+  red: [[2, 9], [25, 38]],
+  orange: [[13, 14], [41, 58]],
+  white: [[33, 42], [14, 17]],
+  blue: [[43, 56], [38, 55]],
+};
+
 // ---------- New game ----------
 
 export function newGame(opts, rng) {
@@ -86,11 +95,12 @@ export function newGame(opts, rng) {
       roadLength: 0,
     });
   }
-  const board = makeBoard(opts.board || 'beginner', rng);
+  const fixedStart = opts.board === 'beginnerStart';
+  const board = makeBoard(fixedStart ? 'beginner' : opts.board || 'beginner', rng);
   const order = [];
   for (let i = 0; i < n; i++) order.push(i);
   for (let i = n - 1; i >= 0; i--) order.push(i);
-  return {
+  const state = {
     v: 1,
     config: { numPlayers: n, vpTarget: opts.vpTarget || 10, board: opts.board || 'beginner' },
     board,
@@ -122,6 +132,29 @@ export function newGame(opts, rng) {
     },
     playedDev: players.map(() => []), // public: types of dev cards played (knights and progress)
   };
+  if (fixedStart) {
+    const g = state;
+    for (const pl of g.players) {
+      const spots = BEGINNER_START[pl.colour];
+      if (!spots) continue;
+      spots.forEach(([v, e], i) => {
+        g.buildings[v] = { player: pl.id, type: 'settlement' };
+        g.roads[e] = pl.id;
+        pl.settlementsLeft--; pl.roadsLeft--;
+        if (i === 1) {
+          for (const h of GEO.vertices[v].hexes) {
+            const res = TERRAIN_RESOURCE[g.board.hexes[h].terrain];
+            if (res) { g.hidden.hands[pl.id][res]++; g.bank[res]--; }
+          }
+        }
+      });
+      pl.roadLength = longestRoadFor(g, pl.id);
+    }
+    g.phase = 'roll';
+    g.turn = 1;
+    g.current = 0;
+  }
+  return state;
 }
 
 // ---------- Queries ----------

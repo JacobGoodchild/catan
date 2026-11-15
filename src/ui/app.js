@@ -58,7 +58,8 @@ function startGame() {
   tradeDraft = null;
   lastHand = null;
   addLog(`New game. ${n} players, ${game.config.vpTarget} points to win.`);
-  addLog(`${nameOf(game.current)} ${game.current === human ? 'place' : 'places'} first.`);
+  if (game.phase === 'roll') addLog(`Starting positions from the beginner set-up. ${nameOf(game.current)} ${game.current === human ? 'start' : 'starts'}.`);
+  else addLog(`${nameOf(game.current)} ${game.current === human ? 'place' : 'places'} first.`);
   advance();
 }
 

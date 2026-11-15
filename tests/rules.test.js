@@ -423,3 +423,15 @@ test('other players cannot trade among themselves or with the bank off-turn', ()
   bad(s, { type: 'bankTrade', player: 1, give: 'ore', get: 'wool' });
   bad(s, { type: 'offerTrade', player: 1, give: { ore: 1 }, get: { wool: 1 } });
 });
+
+test('starting set-up for beginners: fixed pieces, starred settlements pay, distance rule holds', () => {
+  const s = newGame({ numPlayers: 4, board: 'beginnerStart', colours: ['red', 'blue', 'white', 'orange'] }, rng());
+  assert.equal(s.phase, 'roll');
+  assert.equal(Object.keys(s.buildings).length, 8);
+  assert.equal(Object.keys(s.roads).length, 8);
+  for (const v of Object.keys(s.buildings)) for (const a of GEO.vertices[v].adj) assert.ok(!s.buildings[a], 'distance rule');
+  // Rulebook example: Blue receives 1 brick, 1 lumber and 1 ore for the starred settlement.
+  assert.deepEqual(s.hidden.hands[1], { brick: 1, lumber: 1, wool: 0, grain: 0, ore: 1 });
+  for (const p of s.players) assert.equal(handTotal(s.hidden.hands[p.id]), 3);
+  for (const [e, p] of Object.entries(s.roads)) assert.ok(GEO.edges[e].v.some((v) => s.buildings[v] && s.buildings[v].player === p));
+});
