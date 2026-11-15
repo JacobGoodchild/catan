@@ -7,7 +7,7 @@ import { botAction, publicVP } from '../engine/bots.js';
 import { cryptoRandom, cryptoDie } from '../engine/rng.js';
 import { GEO } from '../engine/geometry.js';
 import { createBoard } from './board.js';
-import { sharedDefs, resourceIcon, PLAYER_COLOURS, settlementSVG } from './art.js';
+import { sharedDefs, resourceIcon, PLAYER_COLOURS, settlementSVG, pieceIcon } from './art.js';
 import { resourceCard, devCard, cardBack, buildingCostsCard, specialCard, RES_NAME, DEV_INFO } from './cards.js';
 import { rollDice, preloadDice } from './dice.js';
 import { sound } from './sound.js';
@@ -88,6 +88,17 @@ function addLog(text, cls = '') {
   const ol = $('#log');
   ol.appendChild(li);
   ol.scrollTop = ol.scrollHeight;
+  if (cls !== 'turn' && cls !== 'hint') setTicker(text);
+}
+let tickerT;
+function setTicker(text) {
+  const el = $('#ticker');
+  el.textContent = text;
+  el.classList.remove('show');
+  void el.offsetWidth;
+  el.classList.add('show');
+  clearTimeout(tickerT);
+  tickerT = setTimeout(() => el.classList.remove('show'), 5000);
 }
 function renderLog() {
   const ol = $('#log');
@@ -185,7 +196,7 @@ function advance() {
   save();
   clearTimeout(botTimer);
   if (game.phase === 'gameOver') { if (!AUTO) showGameOver(); return; }
-  if (busy) return;
+  if (busy || !home.hidden) return;
   const actors = actorsNeeded(game);
   const bot = actors.find((p) => AUTO || p !== human);
   if (bot !== undefined) {
@@ -249,13 +260,32 @@ const PHASE_TEXT = {
 function renderStatus() {
   const p = game.current;
   const c = PLAYER_COLOURS[game.players[p].colour];
-  const who = p === human ? 'Your turn' : `${game.players[p].name}’s turn`;
-  const phase = game.phase === 'gameOver' ? `${nameOf(game.winner)} ${game.winner === human ? 'win' : 'wins'}` : PHASE_TEXT[game.phase];
-  $('#status').innerHTML = `<span class="swatch" style="background:${c.base};border-color:${c.dark}"></span><b>${who}</b><span class="phase">${phase}</span>${game.dice ? diceMini(game.dice) : ''}`;
+  const mine = p === human;
+  const over = game.phase === 'gameOver';
+  const who = over ? `${nameOf(game.winner)} ${game.winner === human ? 'win' : 'wins'}` : mine ? 'Your turn' : `${game.players[p].name}’s turn`;
+  let phase = over ? 'Game over' : PHASE_TEXT[game.phase];
+  if (!over && game.phase === 'discard') phase = game.pendingDiscards[human] ? 'Discard half your cards' : 'Waiting for discards';
+  if (!over && !mine && game.phase === 'main') phase = 'Trading and building';
+  if (!over && !mine && game.phase === 'roll') phase = 'Rolling';
+  if (!over && mine) {
+    if (game.phase === 'setupSettlement') phase = 'Place a settlement on a white dot';
+    else if (game.phase === 'setupRoad') phase = 'Place a road next to it';
+    else if (game.phase === 'robber') phase = 'Move the robber to another hex';
+    else if (game.phase === 'steal') phase = 'Choose who to rob';
+    else if (game.phase === 'roadBuilding') phase = `Place a free road (${game.freeRoads} left)`;
+    else if (game.phase === 'main' && mode) phase = `Choose where to build your ${mode}`;
+    else if (game.phase === 'main') phase = 'Trade, build, or end your turn';
+  }
+  const el = $('#status');
+  el.className = `banner ${mine && !over ? 'mine' : ''}`;
+  el.style.setProperty('--pc', c.base);
+  el.style.setProperty('--pcd', c.dark);
+  el.style.setProperty('--pct', game.players[p].colour === 'white' ? '#2b241c' : '#fff');
+  el.innerHTML = `<span class="b-who">${who}</span><span class="b-phase">${phase}</span>${game.dice && game.phase !== 'roll' ? diceMini(game.dice) : ''}`;
 }
 function diceMini(d) {
   const face = (n, cls) => `<span class="die-mini ${cls}">${n}</span>`;
-  return `<span class="dice-mini">${face(d[0], 'red')}${face(d[1], 'yellow')}</span>`;
+  return `<span class="dice-mini">${face(d[0], 'red')}${face(d[1], 'yellow')}<span class="dice-sum">${d[0] + d[1]}</span></span>`;
 }
 let flashT;
 function flashStatus(msg) {
@@ -276,15 +306,15 @@ function renderPlayers() {
     const cards = handTotal(game.hidden.hands[id]);
     const devs = game.hidden.dev[id].length;
     const active = id === game.current && game.phase !== 'gameOver';
-    return `<div class="player panel ${active ? 'active' : ''}" data-player="${id}" style="--pc:${pl.colour === 'white' ? '#a39b89' : c.base};--pcd:${c.dark}">
+    return `<div class="player panel ${active ? 'active' : ''} ${isMe ? 'me' : ''}" data-player="${id}" style="--pc:${c.base};--pcd:${c.dark};--pct:${pl.colour === 'white' ? '#2b241c' : '#fff'}">
       <div class="p-head"><svg viewBox="-16 -18 32 32" class="p-icon">${settlementSVG(pl.colour, 0, 0, 1)}</svg>
-        <span class="p-name">${isMe ? 'You' : pl.name}</span>
-        <span class="p-vp" title="Victory points${isMe ? ' (including hidden cards)' : ' (visible)'}">${vp}<small> VP</small></span></div>
+        <span class="p-name">${isMe ? 'You' : pl.name}${active ? '<span class="p-turn">Playing</span>' : ''}</span>
+        <span class="p-vp" title="Victory points${isMe ? ' (including hidden cards)' : ' (visible)'}">${vp}<small>/${game.config.vpTarget}</small></span></div>
       <div class="p-stats">
-        <span title="Resource cards" class="${cards > 7 ? 'over7' : ''}"><span class="mini-card res"></span>${cards}</span>
-        <span title="Development cards"><span class="mini-card dev"></span>${devs}</span>
-        <span title="Knights played">Knights ${pl.knightsPlayed}</span>
-        <span title="Longest road">Road ${pl.roadLength}</span>
+        <span title="Resource cards" class="${cards > 7 ? 'over7' : ''}"><b>${cards}</b>Cards</span>
+        <span title="Development cards"><b>${devs}</b>Dev</span>
+        <span title="Knights played"><b>${pl.knightsPlayed}</b>Knights</span>
+        <span title="Longest road"><b>${pl.roadLength}</b>Road</span>
       </div>
       <div class="p-special">${game.longestRoad === id ? specialCard('longestRoad') : ''}${game.largestArmy === id ? specialCard('largestArmy') : ''}</div>
     </div>`;
@@ -341,16 +371,21 @@ function renderActions() {
     trade: main && handTotal(hand) > 0,
     end: main,
   };
-  $('#actions').innerHTML = [
-    btn('roll', 'Roll', can.roll, 'primary'),
-    btn('road', 'Road', can.road),
-    btn('settlement', 'Settlement', can.settlement),
-    btn('city', 'City', can.city),
-    btn('dev', '<span class="lbl-long">Development card</span><span class="lbl-short">Dev card</span>', can.dev),
-    btn('trade', 'Trade', can.trade),
-    btn('end', 'End turn', can.end, 'end'),
-  ].join('');
-  $('#supply').innerHTML = `<span title="Roads left">${pl.roadsLeft} roads</span><span title="Settlements left">${pl.settlementsLeft} settlements</span><span title="Cities left">${pl.citiesLeft} cities</span>`;
+  const col = pl.colour;
+  const tile = (id, label, enabled, icon) => `<button class="tile ${mode === id ? 'pressed' : ''}" data-act="${id}" ${enabled ? '' : 'disabled'} title="${label}${keys[id] ? ` (${keys[id]})` : ''}">${icon}<span>${label}</span></button>`;
+  const tradeIcon = '<svg viewBox="0 0 36 36" class="piece-icon"><path d="M6 13h20l-5-5M30 23H10l5 5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  const rollPhase = me && game.phase === 'roll';
+  $('#actions').innerHTML = `<div class="tiles">${[
+    tile('road', 'Road', can.road, pieceIcon('road', col)),
+    tile('settlement', 'Settlement', can.settlement, pieceIcon('settlement', col)),
+    tile('city', 'City', can.city, pieceIcon('city', col)),
+    tile('dev', 'Dev card', can.dev, pieceIcon('dev', col)),
+    tile('trade', 'Trade', can.trade, tradeIcon),
+  ].join('')}</div>${rollPhase
+    ? `<button class="button primary main-act" data-act="roll" ${can.roll ? '' : 'disabled'} title="Roll dice (R)">Roll dice</button>`
+    : `<button class="button primary main-act" data-act="end" ${can.end ? '' : 'disabled'} title="End turn (E)">End turn</button>`}`;
+  $('#supply').innerHTML = `<div class="panel-title">Your pieces left</div><div class="supply-row">
+    <span title="Roads left">${pieceIcon('road', col)}<b>${pl.roadsLeft}</b></span><span title="Settlements left">${pieceIcon('settlement', col)}<b>${pl.settlementsLeft}</b></span><span title="Cities left">${pieceIcon('city', col)}<b>${pl.citiesLeft}</b></span></div>`;
 }
 
 function markBuildable() {
@@ -386,13 +421,10 @@ function renderPrompt() {
   let html = '';
   if (AUTO) { /* the bot plays this seat */ }
   else if (game.phase === 'discard' && game.pendingDiscards[human]) { openDiscard(); }
-  else if (me && game.phase === 'setupSettlement') html = 'Place a settlement.';
-  else if (me && game.phase === 'setupRoad') html = 'Place a road next to it.';
-  else if (me && game.phase === 'robber') html = 'Move the robber to a new hex.';
+  else if (me && game.phase === 'roll' && !busy) html = '<button class="button primary cta" data-roll>Roll the dice</button>';
   else if (me && game.phase === 'steal') {
     html = `Steal from: ${game.stealCandidates.map((p) => `<button class="button small" data-steal="${p}">${nameOf(p)} (${plural(handTotal(game.hidden.hands[p]), 'card')})</button>`).join(' ')}`;
-  } else if (me && game.phase === 'roadBuilding') html = `Place a free road (${game.freeRoads} left).`;
-  else if (me && mode) html = `Choose where to build. <button class="button small" data-cancel>Cancel</button>`;
+  }
   else if (game.phase === 'discard') html = 'Waiting for discards.';
   else if (game.trade && game.trade.from === human) html = tradeStatusHtml();
   else if (game.trade && game.trade.responses[human] === undefined && game.phase !== 'gameOver') {
@@ -681,11 +713,12 @@ function showGameOver() {
   setTimeout(() => openDialog(`<div class="dialog-head"><h2>${nameOf(w)} ${w === human ? 'win' : 'wins'}</h2></div>
     <table class="scores"><thead><tr><th>Player</th><th>Points</th><th>VP cards</th></tr></thead><tbody>${rows}</tbody></table>
     ${rollChart()}
-    <div class="dialog-foot"><span class="spacer"></span><button class="button" data-close>Close</button><button class="button primary" data-new>New game</button></div>`, (ev) => {
+    <div class="dialog-foot"><span class="spacer"></span><button class="button" data-close>Close</button><button class="button" data-menu>Main menu</button><button class="button primary" data-new>Play again</button></div>`, (ev) => {
     const b = ev.target.closest('button');
     if (!b) return;
     closeDialog();
     if (b.dataset.new !== undefined) startGame();
+    if (b.dataset.menu !== undefined) showHome();
   }), 900);
 }
 
@@ -720,6 +753,7 @@ $('#hand').addEventListener('click', (ev) => {
 $('#prompt').addEventListener('click', (ev) => {
   const b = ev.target.closest('button');
   if (!b) return;
+  if (b.dataset.roll !== undefined) { sound.unlock(); humanRoll(); return; }
   if (b.dataset.steal) act({ type: 'steal', player: human, victim: +b.dataset.steal });
   if (b.dataset.cancel !== undefined) { mode = null; render(); }
   if (b.dataset.accept) act({ type: 'acceptTrade', player: human, with: +b.dataset.accept });
@@ -737,6 +771,40 @@ document.addEventListener('keydown', (e) => {
   const b = document.querySelector(`#actions [data-act="${k}"]`);
   if (b && !b.disabled) { e.preventDefault(); b.click(); }
 });
+
+// ---------- Main menu ----------
+const home = $('#home');
+function hasSave() { try { return !!localStorage.getItem('catan.save'); } catch { return false; } }
+function syncHome() {
+  for (const seg of home.querySelectorAll('.seg')) {
+    const k = seg.dataset.set;
+    for (const b of seg.children) b.classList.toggle('on', String(settings[k]) === b.dataset.v);
+  }
+  const cont = game && game.phase !== 'gameOver';
+  $('#homeContinue').hidden = !cont;
+  $('#homeStart').classList.toggle('primary', !cont);
+  $('#homeContinue').classList.toggle('primary', !!cont);
+}
+function showHome() {
+  clearTimeout(botTimer);
+  menu.hidden = true;
+  syncHome();
+  home.hidden = false;
+}
+home.addEventListener('click', (ev) => {
+  const b = ev.target.closest('button');
+  if (!b || b.disabled) return;
+  const seg = b.closest('.seg');
+  if (seg) {
+    const k = seg.dataset.set;
+    settings[k] = k === 'opponents' || k === 'vpTarget' ? Number(b.dataset.v) : b.dataset.v;
+    saveSettings(); syncHome(); return;
+  }
+  sound.unlock();
+  if (b.id === 'homeStart') { home.hidden = true; startGame(); }
+  if (b.id === 'homeContinue') { home.hidden = true; advance(); }
+});
+$('#homeBtn').addEventListener('click', showHome);
 
 $('#logToggle').addEventListener('click', () => {
   const box = $('#logBox');
@@ -766,18 +834,9 @@ menu.addEventListener('change', () => {
   if (game) game.levels = game.levels.map((l, i) => (i === human ? l : settings.difficulty));
   saveSettings();
 });
-$('#newGameBtn').addEventListener('click', () => {
-  openDialog(`<div class="dialog-head"><h2>Start a new game?</h2></div><p class="dialog-note">The current game will be lost.</p>
-    <div class="dialog-foot"><span class="spacer"></span><button class="button" data-close>Cancel</button><button class="button primary" data-new>New game</button></div>`, (ev) => {
-    const b = ev.target.closest('button');
-    if (!b) return;
-    closeDialog();
-    if (b.dataset.new !== undefined) startGame();
-  });
-});
-
 // ---------- Boot ----------
 sound.enabled = settings.sound;
 setTimeout(preloadDice, 2000);
-if (!AUTO && resume()) { renderLog(); addLog('Game resumed.'); advance(); } else startGame();
+if (AUTO) startGame();
+else { if (resume()) { renderLog(); render(); } showHome(); }
 window.__catan = { get game() { return game; }, get human() { return human; }, act, render, showGameOver, COLOURS };

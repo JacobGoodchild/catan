@@ -9,27 +9,19 @@
 </head>
 <body>
 <svg id="defs" width="0" height="0" style="position:absolute" aria-hidden="true"></svg>
-<header class="bar">
-  <h1 class="title">Catan</h1>
-  <div class="status" id="status" aria-live="polite"></div>
-  <div class="bar-right">
-    <button class="icon-button" id="newGameBtn" title="New game" aria-label="New game">
-      <svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2.4-5.7M4 4v5h5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    </button>
-    <button class="icon-button cog" id="cogBtn" title="Settings" aria-label="Settings" aria-expanded="false">
-      <svg viewBox="0 0 24 24"><path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z M19.4 13.5l1.6 1.2-1.8 3.1-1.9-.7a7.6 7.6 0 0 1-2 1.1l-.3 2h-3.6l-.3-2a7.6 7.6 0 0 1-2-1.1l-1.9.7-1.8-3.1 1.6-1.2a7.4 7.4 0 0 1 0-3l-1.6-1.2 1.8-3.1 1.9.7a7.6 7.6 0 0 1 2-1.1l.3-2h3.6l.3 2a7.6 7.6 0 0 1 2 1.1l1.9-.7 1.8 3.1-1.6 1.2a7.4 7.4 0 0 1 0 3Z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
-    </button>
-  </div>
-</header>
-
-<main class="table">
-  <section class="board-area">
-    <svg id="board" role="img" aria-label="Board"></svg>
-    <div class="prompt" id="prompt" hidden></div>
-  </section>
-
-  <aside class="side">
-    <div class="bank panel" id="bank"></div>
+<main class="table" id="table">
+  <aside class="left">
+    <div class="brand">
+      <span class="wordmark">Catan</span>
+      <div class="bar-right">
+        <button class="icon-button" id="homeBtn" title="Main menu" aria-label="Main menu">
+          <svg viewBox="0 0 24 24"><path d="M4 11.5 12 4l8 7.5M6.5 10v9.5h4v-5h3v5h4V10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <button class="icon-button cog" id="cogBtn" title="Settings" aria-label="Settings" aria-expanded="false">
+          <svg viewBox="0 0 24 24"><path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z M19.4 13.5l1.6 1.2-1.8 3.1-1.9-.7a7.6 7.6 0 0 1-2 1.1l-.3 2h-3.6l-.3-2a7.6 7.6 0 0 1-2-1.1l-1.9.7-1.8-3.1 1.6-1.2a7.4 7.4 0 0 1 0-3l-1.6-1.2 1.8-3.1 1.9.7a7.6 7.6 0 0 1 2-1.1l.3-2h3.6l.3 2a7.6 7.6 0 0 1 2 1.1l1.9-.7 1.8 3.1-1.6 1.2a7.4 7.4 0 0 1 0 3Z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+    </div>
     <div class="players" id="players"></div>
     <div class="log panel" id="logBox">
       <button class="log-toggle" id="logToggle" aria-expanded="true">Log</button>
@@ -37,15 +29,50 @@
     </div>
   </aside>
 
-  <section class="hand-area">
-    <div class="hand" id="hand"></div>
-    <div class="controls">
-      <div class="actions" id="actions"></div>
-      <div class="supply" id="supply"></div>
+  <section class="board-area">
+    <div class="banner-wrap">
+      <div class="banner" id="status" aria-live="polite"></div>
+      <div class="ticker" id="ticker"></div>
     </div>
+    <svg id="board" role="img" aria-label="Board"></svg>
+    <div class="prompt" id="prompt" hidden></div>
+  </section>
+
+  <aside class="side">
+    <div class="bank panel" id="bank"></div>
     <div id="bc"></div>
+    <div class="supply panel" id="supply"></div>
+  </aside>
+
+  <section class="dock">
+    <div class="hand" id="hand"></div>
+    <div class="actions" id="actions"></div>
   </section>
 </main>
+
+<div class="home" id="home" hidden>
+  <div class="home-inner">
+    <div class="home-title">Catan</div>
+    <div class="home-cards">
+      <section class="home-card">
+        <h2>Play against the computer</h2>
+        <div class="opt"><span>Opponents</span><div class="seg" data-set="opponents"><button data-v="2">2</button><button data-v="3">3</button></div></div>
+        <div class="opt"><span>Difficulty</span><div class="seg" data-set="difficulty"><button data-v="easy">Easy</button><button data-v="normal">Normal</button><button data-v="hard">Hard</button></div></div>
+        <div class="opt"><span>Board</span><div class="seg" data-set="board"><button data-v="beginner">Beginner</button><button data-v="beginnerStart" title="Beginner map with the starting pieces already placed">Pre-placed</button><button data-v="variable">Random</button></div></div>
+        <div class="opt"><span>Points to win</span><div class="seg" data-set="vpTarget"><button data-v="8">8</button><button data-v="10">10</button><button data-v="12">12</button></div></div>
+        <div class="home-go">
+          <button class="button big" id="homeContinue" hidden>Continue game</button>
+          <button class="button big primary" id="homeStart">New game</button>
+        </div>
+      </section>
+      <section class="home-card muted">
+        <h2>Play with friends</h2>
+        <p>Online games with a room code are not built yet.</p>
+        <div class="home-go"><button class="button big" disabled>Not available yet</button></div>
+      </section>
+    </div>
+  </div>
+</div>
 
 <div class="settings-menu panel" id="settings" hidden>
   <label for="setOpp">Opponents</label>
