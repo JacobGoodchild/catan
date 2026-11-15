@@ -8,5 +8,5 @@ import { resourceCard, devCard, cardBack, buildingCostsCard, specialCard } from 
 document.getElementById('defs').innerHTML = '<defs>' + sharedDefs() + '</defs>';
 document.getElementById('r1').innerHTML = ['brick','lumber','wool','grain','ore'].map(r => resourceCard(r)).join('') + cardBack() + cardBack('dev');
 document.getElementById('r2').innerHTML = ['knight','roadBuilding','yearOfPlenty','monopoly','vp'].map((t,i) => devCard(t,{index:i})).join('') + specialCard('longestRoad') + specialCard('largestArmy');
-document.getElementById('r3').innerHTML = buildingCostsCard('blue');
+document.getElementById('r3').innerHTML = [0,1,2,3,4].map(i => devCard('vp',{index:i})).join('') + buildingCostsCard('blue');
 </script></body></html>

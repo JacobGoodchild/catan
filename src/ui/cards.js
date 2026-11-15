@@ -39,6 +39,24 @@ export function cardBack(kind = 'res') {
   </svg></div>`;
 }
 
+const VP_PICS = [
+  // Library: columns and a pediment.
+  `<g transform="translate(0,8)"><polygon points="-30,-14 0,-30 30,-14" fill="#d9cdb0" stroke="#7a6a4a"/><rect x="-28" y="-14" width="56" height="5" fill="#cbbd9b"/>
+    ${[-22, -11, 0, 11, 22].map((x) => `<rect x="${x - 2.5}" y="-9" width="5" height="24" fill="#efe6cf" stroke="#9c8a62" stroke-width="0.6"/>`).join('')}<rect x="-30" y="15" width="60" height="5" fill="#b8a986"/></g>`,
+  // Market: stalls with striped awnings.
+  `<g transform="translate(0,10)">${[-20, 4].map((x, i) => `<g transform="translate(${x},0)"><rect x="-2" y="-6" width="20" height="18" fill="#b98d5a"/><path d="M-4,-6 L20,-6 L22,-14 L-6,-14 Z" fill="${i ? '#2f6c9a' : '#a2262b'}"/><path d="M2,-14 L0,-6 M10,-14 L10,-6 M18,-14 L20,-6" stroke="#f3e9cf" stroke-width="2.5"/><circle cx="4" cy="6" r="3" fill="#e2b13a"/><circle cx="11" cy="6" r="3" fill="#7f9a3e"/></g>`).join('')}</g>`,
+  // Chapel: nave and steeple.
+  `<g transform="translate(0,10)"><rect x="-22" y="-8" width="30" height="20" fill="#d9cdb0" stroke="#7a6a4a"/><polygon points="-25,-8 -7,-20 11,-8" fill="#8e4a2a"/>
+    <rect x="8" y="-22" width="12" height="34" fill="#cbbd9b" stroke="#7a6a4a"/><polygon points="6,-22 14,-38 22,-22" fill="#8e4a2a"/><path d="M14,-44 V-38 M11,-41 H17" stroke="#3b2a18" stroke-width="1.5"/><rect x="-12" y="0" width="7" height="12" rx="3.5" fill="#3b2a18"/></g>`,
+  // Great Hall: long timbered hall.
+  `<g transform="translate(0,10)"><rect x="-34" y="-8" width="68" height="20" fill="#e6d8b8" stroke="#6d4e2b"/><polygon points="-38,-8 -28,-24 28,-24 38,-8" fill="#7d4a2a"/>
+    ${[-26, -13, 0, 13, 26].map((x) => `<path d="M${x},-8 V12" stroke="#6d4e2b" stroke-width="2"/>`).join('')}<rect x="-4" y="0" width="8" height="12" fill="#3b2a18"/></g>`,
+  // University: domed building.
+  `<g transform="translate(0,10)"><rect x="-30" y="-6" width="60" height="18" fill="#e3d6b5" stroke="#7a6a4a"/><rect x="-12" y="-16" width="24" height="10" fill="#d4c6a2" stroke="#7a6a4a"/>
+    <path d="M-12,-16 A12,12 0 0 1 12,-16 Z" fill="#6f8f9e" stroke="#435a64"/><path d="M0,-28 V-34" stroke="#3b2a18" stroke-width="1.5"/>
+    ${[-24, -14, 14, 24].map((x) => `<rect x="${x - 3}" y="-2" width="6" height="9" fill="#3b2a18"/>`).join('')}<rect x="-4" y="0" width="8" height="12" fill="#3b2a18"/></g>`,
+];
+
 function devPicture(type, seed) {
   const pics = {
     knight: `<g transform="translate(0,6)"><ellipse cx="0" cy="22" rx="30" ry="5" fill="#4d3b1c" opacity="0.4"/>
@@ -58,7 +76,8 @@ function devPicture(type, seed) {
       <rect x="-22" y="-2" width="8" height="12" fill="#3b2a18"/><rect x="-4" y="-2" width="8" height="22" fill="#3b2a18"/><rect x="14" y="-2" width="8" height="12" fill="#3b2a18"/></g>`,
   };
   const terrain = type === 'knight' ? 'pasture' : type === 'vp' ? 'fields' : type === 'monopoly' ? 'desert' : type === 'yearOfPlenty' ? 'fields' : 'pasture';
-  return picture(`<rect x="-50" y="-42" width="100" height="84" fill="#fff" opacity="0.18"/>${pics[type]}`, terrain, seed);
+  const art = type === 'vp' ? VP_PICS[(seed - 11) % VP_PICS.length] : pics[type];
+  return picture(`<rect x="-50" y="-42" width="100" height="84" fill="#fff" opacity="0.18"/>${art}`, terrain, seed);
 }
 
 export function devCard(type, opts = {}) {
