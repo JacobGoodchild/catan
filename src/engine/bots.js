@@ -293,7 +293,8 @@ export function botAction(state, p, rng = Math.random, level = 'normal') {
   }
 
   // Development cards.
-  if (playable('knight') && (robberOnMe || (pl.knightsPlayed >= 2 && view.largestArmy !== p))) return { type: 'playDev', player: p, card: 'knight' };
+  const knightsHeld = view.hidden.dev[p].filter((c) => c.type === 'knight' && c.turn < view.turn).length;
+  if (playable('knight') && (robberOnMe || (pl.knightsPlayed >= 2 && view.largestArmy !== p) || (L.plan && knightsHeld >= 2))) return { type: 'playDev', player: p, card: 'knight' };
   const g = goal(view, p);
   const cost = COSTS[g] || COSTS.dev;
   if (playable('yearOfPlenty')) {
