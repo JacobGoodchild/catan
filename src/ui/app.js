@@ -19,7 +19,7 @@ const AUTO = new URLSearchParams(location.search).has('auto');
 const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 // ---------- Settings ----------
-const DEFAULTS = { opponents: 3, difficulty: 'normal', speed: 'normal', board: 'beginner', vpTarget: 10, sound: false, friendlyRobber: false };
+const DEFAULTS = { opponents: 3, difficulty: 'normal', speed: 'normal', board: 'beginner', vpTarget: 10, sound: true, friendlyRobber: false };
 function loadSettings() {
   try { return { ...DEFAULTS, ...JSON.parse(localStorage.getItem('catan.settings') || '{}') }; } catch { return { ...DEFAULTS }; }
 }

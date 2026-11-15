@@ -26,9 +26,10 @@ function knock(c, { freq = 220, gain = 0.12, when = 0 } = {}) {
 }
 export const sound = {
   enabled: false,
-  unlock() { if (this.enabled) { const c = ac(); if (c && c.state === 'suspended') c.resume(); } },
+  unlocked: false, // browsers only allow audio after the first click or key press
+  unlock() { this.unlocked = true; if (this.enabled) { const c = ac(); if (c && c.state === 'suspended') c.resume(); } },
   play(kind, opts = {}) {
-    if (!this.enabled) return;
+    if (!this.enabled || !this.unlocked) return;
     const c = ac(); if (!c) return;
     if (kind === 'card') noise(c, 0.12, { freq: 3200, q: 0.6, gain: 0.05 });
     else if (kind === 'piece') knock(c, { freq: 260, gain: 0.1 });
@@ -36,3 +37,5 @@ export const sound = {
     else if (kind === 'die') knock(c, { freq: 500 + Math.random() * 300, gain: 0.05 * (opts.v || 1) });
   },
 };
+
+for (const ev of ['pointerdown', 'keydown']) window.addEventListener(ev, () => sound.unlock(), { once: false, passive: true });

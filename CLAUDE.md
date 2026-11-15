@@ -6,10 +6,10 @@
 - Rules engine: pure logic, one `step(state, action)` entry point, hidden info kept apart in `state.hidden`. 27 rule tests plus a 2,000-game bot simulation (card totals, bank, piece counts and dev deck checked after every action). All pass.
 - Look: board, pieces, tokens, harbours, robber and all cards drawn in SVG after the 2020 rulebook art; 3D physics dice (three.js + cannon-es) with fair `crypto` results; a calm interface frame in the style of Groundwork, with a dark theme.
 - Play: beginner map (with or without the fixed beginner pieces) or variable board; trading with the bank, harbours and players, with counter-offers both ways; all development cards; Longest Road and Largest Army with the rulebook's tie rules; custom points target; Friendly robber house rule (off); save and resume; keyboard shortcuts.
-- Feel: cards fly from tiles to hands and back to the bank, dev cards flip in, played cards are revealed, the robber slides, special cards move to their owner, pieces settle, quiet synthesised sound (off by default), and reduced motion is respected.
+- Feel: cards fly from tiles to hands and back to the bank, dev cards flip in, played cards are revealed, the robber slides, special cards move to their owner, pieces settle, quiet synthesised sound (on, low volume; can be switched off), and reduced motion is respected.
 - Whole games have been played through the real browser interface by an automated clicker (setup, robber, discards, trades, dev cards, game over) with no errors.
 
-**Still to do.** See the unticked items below: richer card illustrations, smarter Hard bots, more tablet polish, and play-testing by a person (me playing by hand, not a script).
+**Still to do.** See the unticked items below: richer card illustrations, smarter Hard bots, more tablet polish, and play-testing by a person rather than a script.
 
 **Please test.** A full game on Normal; rolling a 7 while holding more than 7 cards; proposing a trade and accepting a bot's counter-offer; each development card; Longest Road changing hands; reloading mid-game; the "Beginner map and pieces" option; dark mode if your system uses it.
 
@@ -70,7 +70,7 @@ Every change is an action `{ type, player, ... }` passed to `step(state, action,
 
 ## Known issues
 
-- Sound is synthesised with Web Audio (no files). It's off by default; switch on in settings.
+- Sound is synthesised with Web Audio (no files), on by default at a low volume (the brief: "optional and quiet by default"); switch off in settings. It starts after the first click, as browsers require.
 - The 3D dice fall back to flat dice if WebGL is missing; a 6-second safety timeout stops a dice failure from stalling the game.
 - In the browser the full state (including bots' hands) lives in memory. Bots only ever read `viewFor(state, seat)`, so they don't cheat, but a curious player could peek in the console. Fine for single player; the server version will fix it.
 
