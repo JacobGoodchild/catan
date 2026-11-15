@@ -73,7 +73,8 @@ export function sharedDefs() {
 
 function tree(x, y, s, r, kind) {
   const g = ['#1f3f1b', '#29501f', '#335f26', '#3f7230', '#4d8238'];
-  const c = g[Math.floor(r() * g.length)];
+  let c = g[Math.floor(r() * g.length)];
+  if (kind === 'round' && r() < 0.12) c = r() < 0.5 ? '#b0702a' : '#a8902e';
   const hi = '#6a9c45';
   if (kind === 'pine') {
     return `<g><ellipse cx="${x + s * 0.25}" cy="${y + s * 0.95}" rx="${s * 0.55}" ry="${s * 0.18}" fill="#152b12" opacity="0.35"/>
@@ -118,6 +119,7 @@ export function terrainArt(terrain, seed) {
       const x = -90 + r() * 180, y = -90 + r() * 180;
       parts.push(`<path d="M${x},${y} l2,-5 l2,5" stroke="#5f9630" stroke-width="1.4" fill="none" opacity="0.7"/>`);
     }
+    parts.push(`<path d="M-85,-55 C-40,-62 0,-48 30,-70 M20,60 C40,40 70,45 95,30" stroke="#d8d2bd" stroke-width="3" stroke-dasharray="3 1.5" fill="none" opacity="0.8"/>`);
     parts.push(tree(-48, -42, 10, r, 'round'), tree(55, -10, 9, r, 'round'));
     const flock = [[-10, 5], [12, -18], [28, 22], [-30, 35], [-5, 45], [40, -45]];
     for (const [x, y] of flock) parts.push(sheep(x + r() * 8, y + r() * 8, 6));
@@ -133,6 +135,7 @@ export function terrainArt(terrain, seed) {
       parts.push(s + '</g>');
     }
     parts.push(`<path d="M-100,-5 C-40,-20 30,15 100,-10" stroke="#7d6a2c" stroke-width="3" fill="none" opacity="0.5"/>`);
+    parts.push(`<g transform="translate(-58,8)"><ellipse cx="3" cy="9" rx="13" ry="3" fill="#5b4413" opacity="0.4"/><rect x="-9" y="-4" width="18" height="11" fill="#e9dcc0" stroke="#7a6640" stroke-width="0.8"/><polygon points="-11,-4 0,-13 11,-4" fill="#9a4a26" stroke="#5e2b14" stroke-width="0.8"/><rect x="-2" y="1" width="4" height="6" fill="#5e4325"/></g>`);
     for (let i = 0; i < 6; i++) {
       const x = -60 + r() * 120, y = -60 + r() * 120;
       parts.push(`<g><ellipse cx="${x + 2}" cy="${y + 6}" rx="6" ry="2" fill="#6b4f16" opacity="0.4"/><path d="M${x - 4},${y + 5} L${x},${y - 7} L${x + 4},${y + 5} Z" fill="#f2d679" stroke="#a7802a" stroke-width="0.8"/></g>`);
