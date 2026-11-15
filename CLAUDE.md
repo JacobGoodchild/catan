@@ -1,14 +1,19 @@
 # Catan — working notes
 
-## Summary (latest checkpoint)
+## Summary (latest checkpoint, end of session 1)
 
-**Done:** a complete, playable game against 2 or 3 computer players, start to finish, on the live site. The rules engine is pure logic with one `step(state, action)` entry point, 27 rule tests and a 2,000-game bot simulation (all pass). Full games have also been played through the real browser interface by an automated clicker, with no errors. The board, pieces, tokens, harbours, robber and cards are drawn in SVG to match the 5th edition. The dice are 3D (three.js + cannon-es) with fair results from `crypto`. There are card flight animations, a collapsible log, trading with the bank, harbours and players (including counter-offers both ways), settings behind the cog, and automatic save and resume.
+**Done.** A complete, playable game against 2 or 3 computer players, start to finish, live at https://jacobgoodchild.github.io/catan/.
+- Rules engine: pure logic, one `step(state, action)` entry point, hidden info kept apart in `state.hidden`. 27 rule tests plus a 2,000-game bot simulation (card totals, bank, piece counts and dev deck checked after every action). All pass.
+- Look: board, pieces, tokens, harbours, robber and all cards drawn in SVG after the 2020 rulebook art; 3D physics dice (three.js + cannon-es) with fair `crypto` results; a calm interface frame in the style of Groundwork, with a dark theme.
+- Play: beginner map (with or without the fixed beginner pieces) or variable board; trading with the bank, harbours and players, with counter-offers both ways; all development cards; Longest Road and Largest Army with the rulebook's tie rules; custom points target; Friendly robber house rule (off); save and resume; keyboard shortcuts.
+- Feel: cards fly from tiles to hands and back to the bank, dev cards flip in, played cards are revealed, the robber slides, special cards move to their owner, pieces settle, quiet synthesised sound (off by default), and reduced motion is respected.
+- Whole games have been played through the real browser interface by an automated clicker (setup, robber, discards, trades, dev cards, game over) with no errors.
 
-**Still to do:** see the unticked items below. Mainly: more art polish (resource card pictures, development card illustrations), smarter Hard bots, a fuller tablet layout, and more play-testing by hand.
+**Still to do.** See the unticked items below: richer card illustrations, smarter Hard bots, more tablet polish, and play-testing by a person (me playing by hand, not a script).
 
-**Worth testing:** a full game on each difficulty; rolling a 7 with more than 7 cards; trading (offer, counter, bank and harbour); playing each development card; Longest Road changing hands; reload mid-game to check resume.
+**Please test.** A full game on Normal; rolling a 7 while holding more than 7 cards; proposing a trade and accepting a bot's counter-offer; each development card; Longest Road changing hands; reloading mid-game; the "Beginner map and pieces" option; dark mode if your system uses it.
 
-**Dev tools:** `tools/board-preview.html` (board only, `?b=variable` for a random board) and `tools/dice-preview.html?v=6,3`. Add `?auto` to the main page to let a bot play your seat (soak test; doesn't save). Tests: `npm test` (set `SIM_GAMES=200` for a quicker run).
+**Dev tools.** `tools/board-preview.html` (`?b=variable` for a random board), `tools/cards-preview.html`, `tools/dice-preview.html?v=6,3`. Add `?auto` to the main page to let a bot play your seat (soak test; doesn't save). Tests: `npm test` (`SIM_GAMES=200 npm test` for a quicker run).
 
 ## Plan
 
@@ -37,7 +42,7 @@
 - [x] Dice overlay with physics (three.js + cannon-es)
 - [x] Card and piece animations, robber movement, special cards moving
 - [x] Sound (optional, quiet)
-- [ ] Polish passes with screenshots (two done: board vs rulebook, tablet width)
+- [ ] Polish passes with screenshots (several done: board vs rulebook, cards, tablet width, dark mode, side panel). Keep going.
 - [ ] Richer resource and development card illustrations
 - [ ] Hard bots: now clearly stronger than Normal in simulation (about 95 v 68 wins in 200 mixed games; Easy 37), but still simple heuristics. More planning would help (e.g. aiming for specific harbours, holding back cards from the leader).
 - [ ] Tablet layout: works at 1024 wide but the action row wraps
