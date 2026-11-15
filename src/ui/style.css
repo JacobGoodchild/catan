@@ -112,11 +112,11 @@ button { font: inherit; color: inherit; }
   position: relative; min-height: 0;
   display: grid; place-items: center;
   background: radial-gradient(ellipse at 50% 45%, var(--table-hi) 0%, var(--table) 75%);
-  padding: 8px;
+  padding: 8px 8px 52px;
 }
 #board { width: 100%; height: 100%; max-height: 100%; display: block; filter: drop-shadow(0 8px 14px rgba(60, 50, 30, .22)); }
 .prompt {
-  position: absolute; left: 50%; bottom: 12px; transform: translateX(-50%);
+  position: absolute; left: 50%; bottom: 8px; transform: translateX(-50%);
   background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
   padding: 8px 14px; box-shadow: 0 2px 8px rgba(0,0,0,.08); display: flex; gap: 8px; align-items: center; flex-wrap: wrap; justify-content: center;
   max-width: calc(100% - 24px);
@@ -196,16 +196,16 @@ button { font: inherit; color: inherit; }
 
 /* Building Costs card. */
 .bc-card {
-  width: 230px; background: #f6efd9; border: 3px solid var(--pc); border-radius: 8px; padding: 6px 8px 7px;
+  width: 250px; background: #f6efd9; border: 3px solid var(--pc); border-radius: 8px; padding: 4px 8px 5px;
   box-shadow: 0 1px 3px rgba(0,0,0,.2), inset 0 0 0 1px #fff8e6; font-family: var(--font-card);
 }
-.bc-head { text-align: center; font: 700 12px/1 var(--font-card); text-transform: uppercase; letter-spacing: .05em; color: #2b241c; padding-bottom: 5px; border-bottom: 1px solid #d6c79f; margin-bottom: 3px; }
-.bc-row { display: grid; grid-template-columns: 1fr 22px 28px; grid-template-rows: auto auto; align-items: center; padding: 2px 3px; border-radius: 4px; cursor: default; }
-.bc-row .bc-name { grid-column: 1; font-size: 11px; font-weight: 700; color: #2b241c; }
-.bc-row .bc-cost { grid-column: 1; grid-row: 2; display: flex; gap: 1px; }
-.bc-row .bc-piece, .bc-row .bc-devback { grid-column: 2; grid-row: 1 / span 2; width: 22px; height: 22px; }
+.bc-head { text-align: center; font: 700 11px/1 var(--font-card); text-transform: uppercase; letter-spacing: .05em; color: #2b241c; padding-bottom: 3px; border-bottom: 1px solid #d6c79f; margin-bottom: 2px; }
+.bc-row { display: grid; grid-template-columns: 68px 1fr 22px 26px; grid-template-rows: auto; align-items: center; gap: 4px; padding: 2px 3px; border-radius: 4px; cursor: default; }
+.bc-row .bc-name { grid-column: 1; font-size: 10.5px; line-height: 1.1; font-weight: 700; color: #2b241c; }
+.bc-row .bc-cost { grid-column: 2; grid-row: 1; display: flex; gap: 1px; }
+.bc-row .bc-piece, .bc-row .bc-devback { grid-column: 3; grid-row: 1; width: 22px; height: 22px; }
 .bc-row .bc-devback .card { width: 16px; height: 22px; box-shadow: none; }
-.bc-row .bc-vp { grid-column: 3; grid-row: 1 / span 2; font-size: 10px; color: #6b5d43; text-align: right; }
+.bc-row .bc-vp { grid-column: 4; grid-row: 1; font-size: 10px; color: #6b5d43; text-align: right; }
 .bc-row.affordable { background: rgba(47, 122, 116, .10); cursor: pointer; }
 .bc-row.affordable:hover { background: rgba(47, 122, 116, .18); }
 .cost-res { width: 17px; height: 17px; border-radius: 50%; background: #fff7e2; border: 1px solid #c9b383; display: grid; place-items: center; }
@@ -335,10 +335,10 @@ button { font: inherit; color: inherit; }
 /* ---------- Smaller screens ---------- */
 @media (max-width: 1100px) {
   .table { grid-template-columns: minmax(0, 1fr) 240px; }
+  .bc-card { width: 236px; }
   .button { padding: 6px 8px; }
   .actions { gap: 4px; }
   .supply { gap: 8px; font-size: 12px; }
-  .bc-card { width: 200px; }
   :root { --card-w: 56px; --card-h: 80px; }
 }
 @media (max-width: 860px) {
