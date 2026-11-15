@@ -661,15 +661,26 @@ function openIncomingTrade() {
   };
   draw();
 }
+function rollChart() {
+  const c = game.rollCounts;
+  if (!c) return '';
+  const max = Math.max(1, ...c);
+  const bars = [];
+  for (let n = 2; n <= 12; n++) {
+    bars.push(`<div class="rc-col" title="${n}: rolled ${plural(c[n], 'time')}"><span class="rc-n">${c[n] || ''}</span><div class="rc-bar ${n === 7 ? 'seven' : ''}" style="height:${(c[n] / max) * 70}px"></div><span class="rc-label">${n}</span></div>`);
+  }
+  return `<div class="panel-title" style="margin-top:14px">Dice rolls</div><div class="roll-chart">${bars.join('')}</div>`;
+}
 function cardsRow(cards) {
   return Object.entries(cards).flatMap(([r, n]) => Array(n).fill(resourceCard(r))).join('');
 }
 
 function showGameOver() {
   const w = game.winner;
-  const rows = game.players.map((p) => `<tr><td><span class="swatch" style="background:${PLAYER_COLOURS[p.colour].base}"></span>${nameOf(p.id)}</td><td>${victoryPoints(game, p.id)}</td><td>${game.hidden.dev[p.id].filter((c) => c.type === 'vp').length}</td></tr>`).join('');
+  const rows = game.players.slice().sort((a, b) => victoryPoints(game, b.id) - victoryPoints(game, a.id)).map((p) => `<tr><td><span class="swatch" style="background:${PLAYER_COLOURS[p.colour].base}"></span>${nameOf(p.id)}</td><td>${victoryPoints(game, p.id)}</td><td>${game.hidden.dev[p.id].filter((c) => c.type === 'vp').length}</td></tr>`).join('');
   setTimeout(() => openDialog(`<div class="dialog-head"><h2>${nameOf(w)} ${w === human ? 'win' : 'wins'}</h2></div>
     <table class="scores"><thead><tr><th>Player</th><th>Points</th><th>VP cards</th></tr></thead><tbody>${rows}</tbody></table>
+    ${rollChart()}
     <div class="dialog-foot"><span class="spacer"></span><button class="button" data-close>Close</button><button class="button primary" data-new>New game</button></div>`, (ev) => {
     const b = ev.target.closest('button');
     if (!b) return;
@@ -768,4 +779,4 @@ $('#newGameBtn').addEventListener('click', () => {
 // ---------- Boot ----------
 sound.enabled = settings.sound;
 if (!AUTO && resume()) { renderLog(); addLog('Game resumed.'); advance(); } else startGame();
-window.__catan = { get game() { return game; }, get human() { return human; }, act, render, COLOURS };
+window.__catan = { get game() { return game; }, get human() { return human; }, act, render, showGameOver, COLOURS };

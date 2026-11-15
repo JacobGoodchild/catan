@@ -552,6 +552,8 @@ function apply(state, a, rng, events) {
       }
       state.dice = d;
       const total = d[0] + d[1];
+      if (!state.rollCounts) state.rollCounts = Array(13).fill(0);
+      state.rollCounts[total]++;
       events.push({ type: 'roll', player: p, dice: d, total });
       if (total === 7) {
         const pending = {};
