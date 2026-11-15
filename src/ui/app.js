@@ -331,7 +331,7 @@ function renderActions() {
   const hand = game.hidden.hands[human];
   const pl = game.players[human];
   const keys = { roll: 'R', end: 'E', trade: 'T', dev: 'D' };
-  const btn = (id, label, enabled, extra = '') => `<button class="button ${extra} ${mode === id ? 'pressed' : ''}" data-act="${id}" ${enabled ? '' : 'disabled'}${keys[id] ? ` title="${label} (${keys[id]})"` : ''}>${label}</button>`;
+  const btn = (id, label, enabled, extra = '') => `<button class="button ${extra} ${mode === id ? 'pressed' : ''}" data-act="${id}" ${enabled ? '' : 'disabled'}${keys[id] ? ` title="${label.replace(/<[^>]+>/g, ' ').replace(/Dev card/, '').trim()} (${keys[id]})"` : ''}>${label}</button>`;
   const can = {
     roll: me && game.phase === 'roll' && !busy,
     road: main && pl.roadsLeft > 0 && canAfford(hand, COSTS.road) && legalRoadSpots(game, human).length > 0,
@@ -346,7 +346,7 @@ function renderActions() {
     btn('road', 'Road', can.road),
     btn('settlement', 'Settlement', can.settlement),
     btn('city', 'City', can.city),
-    btn('dev', 'Development card', can.dev),
+    btn('dev', '<span class="lbl-long">Development card</span><span class="lbl-short">Dev card</span>', can.dev),
     btn('trade', 'Trade', can.trade),
     btn('end', 'End turn', can.end, 'end'),
   ].join('');
