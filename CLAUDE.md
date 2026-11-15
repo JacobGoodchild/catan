@@ -44,7 +44,7 @@
 - [x] Sound (optional, quiet)
 - [ ] Polish passes with screenshots (several done: board vs rulebook, cards, tablet width, dark mode, side panel). Keep going.
 - [ ] Richer card illustrations: Knight and the five VP buildings redrawn; resource and progress cards could still be more painterly
-- [ ] Hard bots: now clearly stronger than Normal in simulation (about 95 v 68 wins in 200 mixed games; Easy 37), but still simple heuristics. More planning would help (e.g. aiming for specific harbours, holding back cards from the leader).
+- [ ] Hard bots: stronger than Normal in simulation (roughly 86–95 v 68–78 wins across runs of 200 mixed games; Easy 33–41), but still simple heuristics. More planning would help (e.g. aiming for specific harbours, holding back cards from the leader).
 - [x] Tablet layout at 1024×768: actions on one row, compact Building Costs card. (Phone widths stack but haven't been polished.)
 - [x] Production animation from hex to hand: checked by screenshot mid-flight
 - [x] Starting Set-up for Beginners option (fixed pieces)
