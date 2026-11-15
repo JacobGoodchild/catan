@@ -74,7 +74,7 @@ function init(container) {
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   scene = new THREE.Scene();
   camera = new THREE.PerspectiveCamera(32, 1, 0.1, 100);
-  camera.position.set(0, 13, 5);
+  camera.position.set(0, 15, 5.8);
   camera.lookAt(0, 0, 0.4);
   scene.add(new THREE.HemisphereLight(0xfff6e6, 0x6b5a40, 1.15));
   light = new THREE.DirectionalLight(0xffffff, 1.9);
@@ -111,7 +111,7 @@ function resize(container) {
 function floorBounds() {
   const halfH = Math.tan((camera.fov * Math.PI) / 360) * camera.position.y * 0.82;
   const halfW = halfH * camera.aspect;
-  return { x: Math.min(halfW, 9) * 0.7, z: halfH * 0.62 };
+  return { x: Math.min(halfW, 9) * 0.45, z: halfH * 0.55 };
 }
 
 function simulate(rand) {

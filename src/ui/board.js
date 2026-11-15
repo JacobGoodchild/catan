@@ -23,7 +23,8 @@ export function createBoard(svg) {
     for (let i = 0; i < 6; i++) { const a = (Math.PI / 3) * i; frame.push(`${R * Math.cos(a)},${R * Math.sin(a)}`); }
     parts.push(`<polygon points="${frame.join(' ')}" fill="#1d6fa6" transform="translate(4,6)" opacity="0.5"/>`);
     parts.push(`<polygon points="${frame.join(' ')}" fill="url(#seaGrad)" stroke="#1b5f8f" stroke-width="4"/>`);
-    parts.push(`<polygon points="${frame.join(' ')}" fill="#fff" filter="url(#waves)" opacity="0.35" style="mix-blend-mode:soft-light"/>`);
+    parts.push(`<clipPath id="frameClip"><polygon points="${frame.join(' ')}"/></clipPath>`);
+    parts.push(`<g clip-path="url(#frameClip)"><polygon points="${frame.join(' ')}" fill="#fff" filter="url(#waves)" opacity="0.35" style="mix-blend-mode:soft-light"/></g>`);
     const inner = [];
     for (let i = 0; i < 6; i++) { const a = (Math.PI / 3) * i; inner.push(`${(R - 14) * Math.cos(a)},${(R - 14) * Math.sin(a)}`); }
     parts.push(`<polygon points="${inner.join(' ')}" fill="none" stroke="#7cc6ec" stroke-width="1.5" opacity="0.6"/>`);

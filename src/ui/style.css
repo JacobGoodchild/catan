@@ -17,7 +17,29 @@
   --card-h: 100px;
   --parch: #f3e9cf;
   --parch-edge: #c9b383;
+  --chip-bg: #1d1d1b;
+  --chip-text: #ffffff;
+  --table-hi: #f1ede3;
   color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1c1b19;
+    --table: #262420;
+    --table-hi: #2e2b26;
+    --surface: #252421;
+    --surface-sunk: #201f1c;
+    --text: #ebe8e1;
+    --text-muted: #a8a397;
+    --border: #3a3833;
+    --border-strong: #514d45;
+    --accent: #3f9a92;
+    --accent-soft: #23403d;
+    --error: #e0676b;
+    --chip-bg: #ebe8e1;
+    --chip-text: #1d1d1b;
+    color-scheme: dark;
+  }
 }
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
@@ -89,7 +111,7 @@ button { font: inherit; color: inherit; }
 .board-area {
   position: relative; min-height: 0;
   display: grid; place-items: center;
-  background: radial-gradient(ellipse at 50% 45%, #f1ede3 0%, var(--table) 75%);
+  background: radial-gradient(ellipse at 50% 45%, var(--table-hi) 0%, var(--table) 75%);
   padding: 8px;
 }
 #board { width: 100%; height: 100%; max-height: 100%; display: block; filter: drop-shadow(0 8px 14px rgba(60, 50, 30, .22)); }
@@ -158,7 +180,7 @@ button { font: inherit; color: inherit; }
 .hand-stack .stack-card { position: absolute; left: calc(var(--i) * 9px); top: calc(var(--i) * -1px); transform: rotate(calc((var(--i) - 2) * 1.5deg)); transform-origin: 50% 120%; }
 .hand-stack .count {
   position: absolute; right: -6px; top: -8px; min-width: 22px; height: 22px; padding: 0 5px; border-radius: 11px;
-  background: var(--text); color: #fff; font-weight: 600; font-size: 12px; display: grid; place-items: center; z-index: 5;
+  background: var(--chip-bg); color: var(--chip-text); font-weight: 600; font-size: 12px; display: grid; place-items: center; z-index: 5;
 }
 .hand-stack.grew .count { animation: pop .5s ease .55s both; }
 @keyframes pop { 40% { transform: scale(1.35); background: var(--accent); } }
