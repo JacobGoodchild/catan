@@ -183,7 +183,7 @@ function handleEvents(events) {
       case 'cancelTrade': addLog('No trade.'); break;
       case 'longestRoad': flySpecial('longestRoad', e.from, e.to); addLog(e.to === null ? 'Longest Road is set aside.' : `${subj(e.to)} ${e.to === human ? 'take' : 'takes'} Longest Road.`, 'special'); break;
       case 'largestArmy': flySpecial('largestArmy', e.from, e.to); addLog(`${subj(e.to)} ${e.to === human ? 'take' : 'takes'} Largest Army.`, 'special'); break;
-      case 'turn': addLog(`${possessive(e.player)} turn.`, 'turn'); if (e.player === human) sound.play('turn'); break;
+      case 'turn': addLog(`${possessive(e.player)} turn.`, 'turn'); if (e.player === human) { sound.play('turn'); flash('Your turn'); } break;
       case 'win': addLog(`${subj(e.player)} ${e.player === human ? 'win' : 'wins'} with ${e.vp} points.`, 'win'); break;
     }
   }
@@ -515,6 +515,15 @@ function showPlayedCard(type) {
   setTimeout(() => el.remove(), 1500 * SPEED[settings.speed]);
 }
 
+function flash(text) {
+  if (AUTO) return;
+  const el = document.createElement('div');
+  el.className = 'flash';
+  el.textContent = text;
+  $('.board-area').appendChild(el);
+  setTimeout(() => el.remove(), 1500);
+}
+
 // ---------- Dialogs ----------
 const dlg = $('#dlg');
 function openDialog(html, onClick) {
@@ -586,13 +595,13 @@ function openTrade() {
     bankText = `${ratio}:1`;
   }
   const bg = tradeDraft.bankGive;
-  const bankRow = `<div class="panel-title">Bank and harbours</div>
+  const bankRow = `<div class="panel-title">Bank and harbours: choose what to give, then what to take</div>
     <div class="bank-trade">
       <div class="bt-side">${RESOURCES.map((r) => `<button class="bt ${bg === r ? 'sel' : ''}" data-bg="${r}" ${hand[r] >= ratios[r] ? '' : 'disabled'} title="Give ${ratios[r]} ${r}">${resourceCard(r)}<span>${ratios[r]}:1</span></button>`).join('')}</div>
       <span class="bt-arrow">→</span>
       <div class="bt-side">${RESOURCES.map((r) => `<button class="bt" data-bget="${r}" ${bg && bg !== r && game.bank[r] > 0 ? '' : 'disabled'} title="Get 1 ${r}">${resourceCard(r)}<span>1</span></button>`).join('')}</div>
     </div>
-    <div class="panel-title" style="margin-top:14px">Players</div>`;
+    <div class="panel-title" style="margin-top:18px">Or make an offer to the other players</div>`;
   openDialog(`<div class="dialog-head"><h2>Trade</h2><button class="icon-button" data-close aria-label="Close">×</button></div>
     ${bankRow}
     <div class="trade-cols">

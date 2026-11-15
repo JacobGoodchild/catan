@@ -458,7 +458,11 @@ body { font-size: 16px; background: #6b4830 var(--wood); }
 .dialog { font-size: 16px; padding: 20px 22px; border-radius: 14px; }
 .dialog-head h2 { font-size: 21px; font-family: var(--font-card); }
 .dialog::backdrop { background: rgba(20, 12, 6, .55); }
-.stepper .card { --card-w: 60px; --card-h: 86px; }
+.stepper .card { --card-w: 56px; --card-h: 80px; }
+.dialog { max-width: min(940px, 96vw); }
+.steppers { gap: 8px; }
+.trade-cols { gap: 28px; }
+.dialog .panel-title { font-size: 13px; }
 .step-ctl .icon-button.small { width: 26px; height: 26px; }
 .bt .card { --card-w: 52px; --card-h: 74px; }
 .settings-menu { top: 64px; left: 14px; right: auto; }
@@ -493,6 +497,11 @@ body { font-size: 16px; background: #6b4830 var(--wood); }
   .tile .piece-icon { width: 36px; height: 36px; }
   .main-act { width: 116px; font-size: 18px; }
   #bc { zoom: .86; }
+  .bank { padding: 8px; }
+  .bank-row { gap: 2px; }
+  .bank-stack svg { width: 27px; height: 27px; }
+  .bank-stack.dev .card { width: 20px; height: 27px; }
+  .bank-stack { font-size: 13px; }
   .p-stats b { font-size: 16px; }
   .board-area { padding-top: 70px; }
   .banner .b-who, .banner .b-phase { font-size: 16px; }
@@ -507,3 +516,8 @@ body { font-size: 16px; background: #6b4830 var(--wood); }
   .left { order: 3; } .side { order: 4; }
   .tiles { flex-wrap: wrap; }
 }
+
+.flash { position: absolute; left: 50%; top: 46%; transform: translate(-50%, -50%); z-index: 7; pointer-events: none;
+  font: 700 54px/1 var(--font-card); letter-spacing: .04em; color: #fff7dc; padding: 18px 44px; border-radius: 16px;
+  background: rgba(150, 34, 26, .93); border: 2px solid #f6d77a; box-shadow: 0 14px 34px rgba(0, 0, 0, .5); animation: flash 1.5s ease forwards; white-space: nowrap; }
+@keyframes flash { 0% { opacity: 0; transform: translate(-50%, -50%) scale(.8); } 15%, 70% { opacity: 1; transform: translate(-50%, -50%) scale(1); } 100% { opacity: 0; transform: translate(-50%, -60%) scale(1); } }
