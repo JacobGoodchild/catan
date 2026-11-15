@@ -59,11 +59,20 @@ const VP_PICS = [
 
 function devPicture(type, seed) {
   const pics = {
-    knight: `<g transform="translate(0,6)"><ellipse cx="0" cy="22" rx="30" ry="5" fill="#4d3b1c" opacity="0.4"/>
-      <path d="M-24,18 L-22,2 C-20,-6 -8,-8 4,-6 L18,-14 L24,-10 L16,0 L16,18 L12,18 L11,4 L-14,6 L-16,18 Z" fill="#6b4a2e"/>
-      <path d="M-4,-8 L-6,-26 L4,-28 L6,-8 Z" fill="#8e8f96"/><circle cx="0" cy="-32" r="6" fill="#a7a8af"/>
-      <path d="M-6,-24 L-14,-6 L-8,-6 Z" fill="#a2262b"/><line x1="8" y1="-40" x2="12" y2="8" stroke="#3b2a18" stroke-width="2"/>
-      <path d="M12,-40 L22,-36 L12,-32 Z" fill="#c0262d"/></g>`,
+    knight: `<g transform="translate(-2,8)">
+      <ellipse cx="0" cy="25" rx="30" ry="4" fill="#3d3016" opacity="0.35"/>
+      <g fill="#5a3b22" stroke="#2e1d10" stroke-width="0.8">
+        <path d="M-22,4 C-24,-6 -14,-10 0,-9 C8,-9 14,-10 18,-16 L22,-24 L27,-22 L25,-14 L29,-10 L26,-7 L20,-9 C18,-2 16,4 14,6 Z"/>
+        <path d="M-20,4 L-23,24 L-19,24 L-15,8 Z"/><path d="M-12,6 L-13,24 L-9,24 L-7,8 Z"/>
+        <path d="M6,6 L5,24 L9,24 L11,7 Z"/><path d="M12,4 L16,24 L20,24 L16,3 Z"/>
+        <path d="M-22,0 C-30,2 -32,10 -30,16 C-27,8 -24,6 -21,6 Z"/>
+      </g>
+      <path d="M-14,-8 L10,-8 L8,4 L-12,4 Z" fill="#a2262b"/>
+      <path d="M-6,-10 L-8,-26 L2,-28 L4,-10 Z" fill="#8e8f96" stroke="#4a4b52" stroke-width="0.6"/>
+      <circle cx="-2" cy="-32" r="5.5" fill="#a7a8af" stroke="#4a4b52" stroke-width="0.6"/><rect x="-4" y="-33" width="5" height="1.4" fill="#2a2a2e"/>
+      <path d="M-12,-22 C-18,-20 -18,-10 -12,-6 C-6,-10 -6,-20 -12,-22 Z" fill="#e7b62c" stroke="#6b4a1e" stroke-width="0.8"/>
+      <line x1="2" y1="-18" x2="34" y2="-40" stroke="#3b2a18" stroke-width="1.8"/><path d="M30,-42 L38,-44 L33,-37 Z" fill="#c0262d"/>
+    </g>`,
     roadBuilding: `<path d="M-50,30 C-20,20 0,10 10,-10 C18,-25 30,-30 50,-32" stroke="#a88a55" stroke-width="12" fill="none"/><path d="M-50,30 C-20,20 0,10 10,-10 C18,-25 30,-30 50,-32" stroke="#d9c08a" stroke-width="7" fill="none"/>
       <g transform="translate(-12,10) rotate(-25)"><rect x="-10" y="-4" width="20" height="7" fill="#7a4f2a"/><circle cx="-7" cy="5" r="4" fill="#4a2e16"/><circle cx="7" cy="5" r="4" fill="#4a2e16"/></g>`,
     yearOfPlenty: `<g transform="translate(0,6)"><path d="M-26,10 C-20,-14 10,-22 24,-18 L18,-6 C6,-10 -10,-4 -14,14 Z" fill="#c48a2e" stroke="#7a521a"/>
