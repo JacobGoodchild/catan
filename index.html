@@ -1,6 +1,72 @@
 <!doctype html>
 <html lang="en-GB">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Catan</title>
-<style>body{margin:0;min-height:100vh;display:grid;place-items:center;background:#f4f1ea;color:#3a352c;font:16px/1.5 Georgia,serif}</style></head>
-<body><p>Catan. In progress.</p></body>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Catan</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-10 -10 20 20'%3E%3Cpolygon points='0,-9 8,-4.5 8,4.5 0,9 -8,4.5 -8,-4.5' fill='%23d8a935' stroke='%23b49b62'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="./src/ui/style.css">
+</head>
+<body>
+<svg id="defs" width="0" height="0" style="position:absolute" aria-hidden="true"></svg>
+<header class="bar">
+  <h1 class="title">Catan</h1>
+  <div class="status" id="status" aria-live="polite"></div>
+  <div class="bar-right">
+    <button class="icon-button" id="newGameBtn" title="New game" aria-label="New game">
+      <svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2.4-5.7M4 4v5h5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <button class="icon-button cog" id="cogBtn" title="Settings" aria-label="Settings" aria-expanded="false">
+      <svg viewBox="0 0 24 24"><path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z M19.4 13.5l1.6 1.2-1.8 3.1-1.9-.7a7.6 7.6 0 0 1-2 1.1l-.3 2h-3.6l-.3-2a7.6 7.6 0 0 1-2-1.1l-1.9.7-1.8-3.1 1.6-1.2a7.4 7.4 0 0 1 0-3l-1.6-1.2 1.8-3.1 1.9.7a7.6 7.6 0 0 1 2-1.1l.3-2h3.6l.3 2a7.6 7.6 0 0 1 2 1.1l1.9-.7 1.8 3.1-1.6 1.2a7.4 7.4 0 0 1 0 3Z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+    </button>
+  </div>
+</header>
+
+<main class="table">
+  <section class="board-area">
+    <svg id="board" role="img" aria-label="Board"></svg>
+    <div class="prompt" id="prompt" hidden></div>
+  </section>
+
+  <aside class="side">
+    <div class="bank panel" id="bank"></div>
+    <div class="players" id="players"></div>
+    <div class="log panel" id="logBox">
+      <button class="log-toggle" id="logToggle" aria-expanded="true">Log</button>
+      <ol id="log"></ol>
+    </div>
+  </aside>
+
+  <section class="hand-area">
+    <div class="hand" id="hand"></div>
+    <div class="controls">
+      <div class="actions" id="actions"></div>
+      <div class="supply" id="supply"></div>
+    </div>
+    <div id="bc"></div>
+  </section>
+</main>
+
+<div class="settings-menu panel" id="settings" hidden>
+  <label for="setOpp">Opponents</label>
+  <select id="setOpp"><option value="2">2</option><option value="3">3</option></select>
+  <label for="setDiff">Difficulty</label>
+  <select id="setDiff"><option value="easy">Easy</option><option value="normal">Normal</option><option value="hard">Hard</option></select>
+  <label for="setSpeed">Game speed</label>
+  <select id="setSpeed"><option value="slow">Slow</option><option value="normal">Normal</option><option value="fast">Fast</option></select>
+  <label for="setBoard">Board</label>
+  <select id="setBoard"><option value="beginner">Beginner map</option><option value="variable">Variable</option></select>
+  <label for="setVp">Points to win</label>
+  <input id="setVp" type="number" min="3" max="20" step="1">
+  <label for="setSound">Sound</label>
+  <input id="setSound" type="checkbox">
+  <p class="settings-note">Opponents, board and points apply to the next new game.</p>
+</div>
+
+<dialog id="dlg" class="dialog"></dialog>
+<div id="dice" class="dice-overlay" hidden></div>
+<div id="fx" class="fx" aria-hidden="true"></div>
+
+<script type="module" src="./src/ui/app.js"></script>
+</body>
 </html>
