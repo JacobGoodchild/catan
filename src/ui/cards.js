@@ -23,7 +23,7 @@ function picture(inner, terrain, seed = 3) {
 
 export function resourceCard(res, extraClass = '') {
   return `<div class="card res res-${res} ${extraClass}" data-res="${res}" title="${RES_NAME[res]}">
-    ${picture(`<g transform="translate(0,-2) scale(1.55)" filter="url(#shadow)">${resourceIcon(res)}</g>`, RES_TERRAIN[res])}
+    ${picture(`<ellipse cx="0" cy="-2" rx="34" ry="26" fill="#fff8e0" opacity="0.38" filter="url(#soft)"/><g transform="translate(0,-2) scale(1.55)" filter="url(#shadow)">${resourceIcon(res)}</g>`, RES_TERRAIN[res])}
     <div class="card-badge"><svg viewBox="-14 -14 28 28">${resourceIcon(res, 0.85)}</svg></div>
   </div>`;
 }
