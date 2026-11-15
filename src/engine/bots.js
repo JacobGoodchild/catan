@@ -321,6 +321,10 @@ export function botAction(state, p, rng = Math.random, level = 'normal') {
   }
 
   // Build.
+  if (level === 'hard' && pl.settlementsLeft > 2 && canAfford(hand, COSTS.settlement)) {
+    const spots = legalSettlementSpots(view, p);
+    if (spots.length) return { type: 'buildSettlement', player: p, vertex: pickBest(spots, (v) => scoreVertex(view, p, v, weights, rng, level)) };
+  }
   if (pl.citiesLeft > 0 && canAfford(hand, COSTS.city)) {
     const spots = legalCitySpots(view, p);
     if (spots.length) return { type: 'buildCity', player: p, vertex: pickBest(spots, (v) => scoreVertex(view, p, v, weights, rng, level)) };

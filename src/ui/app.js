@@ -281,7 +281,7 @@ function renderPlayers() {
         <span class="p-name">${isMe ? 'You' : pl.name}</span>
         <span class="p-vp" title="Victory points${isMe ? ' (including hidden cards)' : ' (visible)'}">${vp}<small> VP</small></span></div>
       <div class="p-stats">
-        <span title="Resource cards"><span class="mini-card res"></span>${cards}</span>
+        <span title="Resource cards" class="${cards > 7 ? 'over7' : ''}"><span class="mini-card res"></span>${cards}</span>
         <span title="Development cards"><span class="mini-card dev"></span>${devs}</span>
         <span title="Knights played">Knights ${pl.knightsPlayed}</span>
         <span title="Longest road">Road ${pl.roadLength}</span>

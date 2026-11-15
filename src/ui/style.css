@@ -341,3 +341,5 @@ button { font: inherit; color: inherit; }
 .bt.sel { border-color: var(--accent); background: var(--accent-soft); }
 .bt:disabled { opacity: .3; cursor: default; }
 .bt-arrow { color: var(--text-muted); font-size: 18px; }
+
+.p-stats .over7 { color: var(--error); font-weight: 600; }
