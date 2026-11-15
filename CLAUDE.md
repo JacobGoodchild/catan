@@ -1,5 +1,15 @@
 # Catan — working notes
 
+## Session 2: interface overhaul
+
+- **Main menu** on every visit (`#home`): play against the computer (opponents, difficulty, board, points to win), Continue game when a save exists, and a "Play with friends" card marked as not built yet. The house button in the top left returns to it; the game pauses while it is open.
+- **Layout**: three columns on a wooden table. Players and log on the left, the board centred, bank / Building Costs / pieces left on the right, and a dock along the bottom with the hand (bigger cards) and large action tiles.
+- **Turn banner** above the board: whose turn (in their colour), what to do in plain words, and the dice. A ticker under it shows the latest log line for five seconds.
+- **Roll dice**: a large pulsing button on the board plus the main button in the dock, which switches between "Roll dice" and "End turn". Text-only prompts moved into the banner so nothing covers the legal spots.
+- **Art**: terrain goes through a painterly filter (wobbled edges, watercolour blotches, grain); pieces get wood grain and are larger; number tokens are larger.
+- Dark theme removed: the wooden table is one consistent look.
+- Worked on branch `claude/intelligent-babbage-ypnaa7` (the session could not push to `main`). Merge it into `main` to publish.
+
 ## Summary (latest checkpoint, end of session 1)
 
 **Done.** A complete, playable game against 2 or 3 computer players, start to finish, live at https://jacobgoodchild.github.io/catan/.

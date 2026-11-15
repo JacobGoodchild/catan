@@ -54,7 +54,7 @@ export function createBoard(svg) {
       parts.push(harbour(h, x1, y1, x2, y2, sx, sy));
     }
     // Number tokens.
-    state.board.hexes.forEach((h, i) => { if (h.number) { const [x, y] = hexXY(i); parts.push(numberToken(h.number, x, y)); } });
+    state.board.hexes.forEach((h, i) => { if (h.number) { const [x, y] = hexXY(i); parts.push(numberToken(h.number, x, y, 1.32)); } });
     // Draw the static layer once as an image, so its texture filters aren't recomputed on every change.
     const vb = svg.getAttribute('viewBox').split(' ').map(Number);
     const doc = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${vb.join(' ')}" width="${vb[2] * 2}" height="${vb[3] * 2}"><defs>${sharedDefs()}</defs>${parts.join('')}</svg>`;
@@ -84,7 +84,7 @@ export function createBoard(svg) {
       const [x, y] = vXY(+v);
       const k = `${b.type[0]}${v}`;
       now.add(k);
-      const art = b.type === 'city' ? citySVG(colour(b.player), x, y - 4, 1.9) : settlementSVG(colour(b.player), x, y - 3, 1.9);
+      const art = b.type === 'city' ? citySVG(colour(b.player), x, y - 4, 2.15) : settlementSVG(colour(b.player), x, y - 3, 2.2);
       bs += `<g class="${known.has(k) ? '' : 'placed'}">${art}</g>`;
     }
     $('#b-buildings').innerHTML = bs;

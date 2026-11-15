@@ -32,17 +32,28 @@ export function hexPoints(cx, cy, size) {
 // Shared <defs>: texture filters and gradients.
 export function sharedDefs() {
   return `
-  <filter id="paint" x="-5%" y="-5%" width="110%" height="110%">
+  <filter id="paint" x="-5%" y="-5%" width="110%" height="110%" color-interpolation-filters="sRGB">
+    <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="3" seed="11" result="wob"/>
+    <feDisplacementMap in="SourceGraphic" in2="wob" scale="5" xChannelSelector="R" yChannelSelector="G" result="d"/>
+    <feGaussianBlur in="d" stdDeviation="0.3" result="db"/>
+    <feTurbulence type="fractalNoise" baseFrequency="0.022" numOctaves="4" seed="5" result="blot"/>
+    <feColorMatrix in="blot" type="matrix" values="0 0 0 0 0.16  0 0 0 0 0.09  0 0 0 0 0.02  1.3 0 0 0 -0.56" result="dk"/>
+    <feColorMatrix in="blot" type="matrix" values="0 0 0 0 1  0 0 0 0 0.96  0 0 0 0 0.78  0 1.4 0 0 -0.6" result="lt"/>
+    <feMerge result="m"><feMergeNode in="db"/><feMergeNode in="dk"/><feMergeNode in="lt"/></feMerge>
+    <feComposite in="m" in2="db" operator="in" result="mm"/>
     <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="3" result="n"/>
-    <feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.34 0" result="a"/>
-    <feComposite in="a" in2="SourceGraphic" operator="in" result="t"/>
-    <feBlend in="SourceGraphic" in2="t" mode="multiply"/>
+    <feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.38 0" result="a"/>
+    <feComposite in="a" in2="mm" operator="in" result="t"/>
+    <feBlend in="mm" in2="t" mode="multiply"/>
   </filter>
   <filter id="soft" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="2.2"/></filter>
-  <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%">
-    <feGaussianBlur in="SourceAlpha" stdDeviation="2.5"/><feOffset dx="2.5" dy="3.5" result="o"/>
-    <feComponentTransfer><feFuncA type="linear" slope="0.45"/></feComponentTransfer>
-    <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+  <filter id="shadow" x="-30%" y="-30%" width="170%" height="170%" color-interpolation-filters="sRGB">
+    <feTurbulence type="fractalNoise" baseFrequency="0.03 0.5" numOctaves="2" seed="2" result="g"/>
+    <feColorMatrix in="g" type="matrix" values="0 0 0 0 0.18  0 0 0 0 0.09  0 0 0 0 0.02  0 0 0 0.75 -0.28" result="ga"/>
+    <feComposite in="ga" in2="SourceGraphic" operator="in" result="grain"/>
+    <feGaussianBlur in="SourceAlpha" stdDeviation="2.6"/><feOffset dx="3" dy="5"/>
+    <feComponentTransfer result="sh"><feFuncA type="linear" slope="0.55"/></feComponentTransfer>
+    <feMerge><feMergeNode in="sh"/><feMergeNode in="SourceGraphic"/><feMergeNode in="grain"/></feMerge>
   </filter>
   <filter id="waves" x="0" y="0" width="100%" height="100%">
     <feTurbulence type="fractalNoise" baseFrequency="0.012 0.05" numOctaves="3" seed="7" result="n"/>
