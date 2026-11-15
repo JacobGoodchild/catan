@@ -551,22 +551,37 @@ function openTrade() {
     bankOk = g[r] === ratio * w[getTypes[0]] && game.bank[getTypes[0]] >= w[getTypes[0]];
     bankText = `${ratio}:1`;
   }
+  const bg = tradeDraft.bankGive;
+  const bankRow = `<div class="panel-title">Bank and harbours</div>
+    <div class="bank-trade">
+      <div class="bt-side">${RESOURCES.map((r) => `<button class="bt ${bg === r ? 'sel' : ''}" data-bg="${r}" ${hand[r] >= ratios[r] ? '' : 'disabled'} title="Give ${ratios[r]} ${r}">${resourceCard(r)}<span>${ratios[r]}:1</span></button>`).join('')}</div>
+      <span class="bt-arrow">→</span>
+      <div class="bt-side">${RESOURCES.map((r) => `<button class="bt" data-bget="${r}" ${bg && bg !== r && game.bank[r] > 0 ? '' : 'disabled'} title="Get 1 ${r}">${resourceCard(r)}<span>1</span></button>`).join('')}</div>
+    </div>
+    <div class="panel-title" style="margin-top:14px">Players</div>`;
   openDialog(`<div class="dialog-head"><h2>Trade</h2><button class="icon-button" data-close aria-label="Close">×</button></div>
+    ${bankRow}
     <div class="trade-cols">
       <div><div class="panel-title">You give</div><div class="steppers">${RESOURCES.map((r) => stepper('g', r, g[r], hand[r])).join('')}</div></div>
       <div><div class="panel-title">You get</div><div class="steppers">${RESOURCES.map((r) => stepper('w', r, w[r], 19)).join('')}</div></div>
     </div>
-    <div class="ratios">${RESOURCES.map((r) => `<span><svg viewBox="-14 -14 28 28">${resourceIcon(r, 0.8)}</svg>${ratios[r]}:1</span>`).join('')}</div>
     <div class="dialog-foot">
       <button class="button" data-clear>Clear</button>
       <span class="spacer"></span>
-      <button class="button" data-bank ${bankOk ? '' : 'disabled'}>Trade with bank${bankText ? ` (${bankText})` : ''}</button>
       <button class="button primary" data-offer ${validOffer ? '' : 'disabled'}>Offer to players</button>
     </div>`, (ev) => {
     const t = ev.target.closest('button');
     if (!t) return;
     const d = t.dataset;
     if (d.close !== undefined) { closeDialog(); return; }
+    if (d.bg) { tradeDraft.bankGive = tradeDraft.bankGive === d.bg ? null : d.bg; openTrade(); return; }
+    if (d.bget) {
+      const give = tradeDraft.bankGive;
+      tradeDraft.bankGive = null;
+      act({ type: 'bankTrade', player: human, give, get: d.bget });
+      if (game.current === human && game.phase === 'main' && handTotal(game.hidden.hands[human]) > 0) openTrade(); else closeDialog();
+      return;
+    }
     if (d.gPlus) { g[d.gPlus]++; w[d.gPlus] = 0; }
     else if (d.gMinus) g[d.gMinus]--;
     else if (d.wPlus) { w[d.wPlus]++; g[d.wPlus] = 0; }
@@ -743,4 +758,4 @@ $('#newGameBtn').addEventListener('click', () => {
 // ---------- Boot ----------
 sound.enabled = settings.sound;
 if (!AUTO && resume()) { renderLog(); addLog('Game resumed.'); advance(); } else startGame();
-window.__catan = { get game() { return game; }, get human() { return human; }, act, COLOURS };
+window.__catan = { get game() { return game; }, get human() { return human; }, act, render, COLOURS };
