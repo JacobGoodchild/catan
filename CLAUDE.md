@@ -43,14 +43,15 @@
 - [x] Card and piece animations, robber movement, special cards moving
 - [x] Sound (optional, quiet)
 - [ ] Polish passes with screenshots (several done: board vs rulebook, cards, tablet width, dark mode, side panel). Keep going.
-- [ ] Richer resource and development card illustrations
+- [ ] Richer card illustrations: Knight and the five VP buildings redrawn; resource and progress cards could still be more painterly
 - [ ] Hard bots: now clearly stronger than Normal in simulation (about 95 v 68 wins in 200 mixed games; Easy 37), but still simple heuristics. More planning would help (e.g. aiming for specific harbours, holding back cards from the leader).
-- [ ] Tablet layout: works at 1024 wide but the action row wraps
+- [x] Tablet layout at 1024×768: actions on one row, compact Building Costs card. (Phone widths stack but haven't been polished.)
 - [x] Production animation from hex to hand: checked by screenshot mid-flight
 - [x] Starting Set-up for Beginners option (fixed pieces)
 - [x] Direct bank/harbour trade row; incoming offers in the prompt bar, not a modal
 - [x] Keyboard shortcuts: R roll, E end turn, T trade, D development card (shown in button tooltips)
 - [x] House rule: Friendly robber (off by default). More could follow the same pattern: a flag in `state.config`, checked in `step`.
+- [x] Dice roll chart and sorted scores on the end-of-game screen
 - [x] Dark theme for the interface via `prefers-color-scheme` (board and cards keep their real colours)
 
 ## Rules decisions
