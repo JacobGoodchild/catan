@@ -370,3 +370,56 @@ test('viewFor hides other hands and the deck', () => {
 });
 
 void edgeOf;
+
+test('road building with only one road left places one road', () => {
+  const s = mainGame();
+  put(s, 0, 0);
+  s.players[0].roadsLeft = 1;
+  s.hidden.dev[0] = [{ type: 'roadBuilding', turn: 1 }];
+  ok(s, { type: 'playDev', player: 0, card: 'roadBuilding' });
+  assert.equal(s.freeRoads, 1);
+  ok(s, { type: 'buildRoad', player: 0, edge: GEO.vertices[0].edges[0] });
+  assert.equal(s.phase, 'main');
+  assert.equal(s.players[0].roadsLeft, 0);
+});
+
+test('year of plenty cannot take what the bank does not have', () => {
+  const s = mainGame();
+  s.hidden.dev[0] = [{ type: 'yearOfPlenty', turn: 1 }];
+  give(s, 1, { ore: 18 });
+  bad(s, { type: 'playDev', player: 0, card: 'yearOfPlenty', resources: ['ore', 'ore'] }, /Bank/);
+  ok(s, { type: 'playDev', player: 0, card: 'yearOfPlenty', resources: ['ore', 'wool'] });
+  assert.equal(s.bank.ore, 0);
+});
+
+test('knight before rolling, then rolling a 7 moves the robber again', () => {
+  const s = mainGame();
+  s.phase = 'roll';
+  s.hidden.dev[0] = [{ type: 'knight', turn: 1 }];
+  ok(s, { type: 'playDev', player: 0, card: 'knight' });
+  ok(s, { type: 'moveRobber', player: 0, hex: 0 });
+  assert.equal(s.phase, 'roll');
+  ok(s, { type: 'roll', player: 0, dice: [1, 6] });
+  assert.equal(s.phase, 'robber');
+  bad(s, { type: 'moveRobber', player: 0, hex: 0 }, /must move/);
+  ok(s, { type: 'moveRobber', player: 0, hex: 1 });
+  assert.equal(s.phase, 'main');
+});
+
+test('cannot build, trade or end the turn before rolling', () => {
+  const s = mainGame();
+  s.phase = 'roll';
+  give(s, 0, { brick: 4, lumber: 4, ore: 4 });
+  put(s, 0, 0);
+  bad(s, { type: 'buildRoad', player: 0, edge: GEO.vertices[0].edges[0] });
+  bad(s, { type: 'bankTrade', player: 0, give: 'ore', get: 'wool' });
+  bad(s, { type: 'offerTrade', player: 0, give: { ore: 1 }, get: { wool: 1 } });
+  bad(s, { type: 'endTurn', player: 0 });
+});
+
+test('other players cannot trade among themselves or with the bank off-turn', () => {
+  const s = mainGame();
+  give(s, 1, { ore: 4 });
+  bad(s, { type: 'bankTrade', player: 1, give: 'ore', get: 'wool' });
+  bad(s, { type: 'offerTrade', player: 1, give: { ore: 1 }, get: { wool: 1 } });
+});
