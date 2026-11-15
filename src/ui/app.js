@@ -1,7 +1,7 @@
 // Game controller: owns the engine state, runs the computer players, renders the interface.
 import {
   newGame, step, actorsNeeded, legalSettlementSpots, legalRoadSpots, legalCitySpots, canAfford, COSTS,
-  RESOURCES, handTotal, harbourRatios, victoryPoints, COLOURS,
+  RESOURCES, handTotal, harbourRatios, victoryPoints, COLOURS, legalRobberHexes,
 } from '../engine/rules.js';
 import { botAction, publicVP } from '../engine/bots.js';
 import { cryptoRandom, cryptoDie } from '../engine/rng.js';
@@ -19,7 +19,7 @@ const AUTO = new URLSearchParams(location.search).has('auto');
 const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 // ---------- Settings ----------
-const DEFAULTS = { opponents: 3, difficulty: 'normal', speed: 'normal', board: 'beginner', vpTarget: 10, sound: false };
+const DEFAULTS = { opponents: 3, difficulty: 'normal', speed: 'normal', board: 'beginner', vpTarget: 10, sound: false, friendlyRobber: false };
 function loadSettings() {
   try { return { ...DEFAULTS, ...JSON.parse(localStorage.getItem('catan.settings') || '{}') }; } catch { return { ...DEFAULTS }; }
 }
@@ -51,7 +51,7 @@ function startGame() {
   let k = 0;
   for (let i = 0; i < n; i++) colours.push(i === human ? 'red' : others[k++]);
   const names = colours.map((c) => c[0].toUpperCase() + c.slice(1));
-  game = newGame({ numPlayers: n, board: settings.board, vpTarget: Number(settings.vpTarget) || 10, colours, names }, cryptoRandom);
+  game = newGame({ numPlayers: n, board: settings.board, vpTarget: Number(settings.vpTarget) || 10, colours, names, friendlyRobber: settings.friendlyRobber }, cryptoRandom);
   game.levels = colours.map(() => settings.difficulty);
   logLines = [];
   mode = null;
@@ -367,7 +367,7 @@ function renderTargets() {
   const ph = game.phase;
   if (ph === 'setupSettlement') return board.setTargets({ vertices: legalSettlementSpots(game, human) }, ({ vertex }) => act({ type: 'buildSettlement', player: human, vertex }));
   if (ph === 'setupRoad' || ph === 'roadBuilding') return board.setTargets({ edges: legalRoadSpots(game, human) }, ({ edge }) => act({ type: 'buildRoad', player: human, edge }));
-  if (ph === 'robber') return board.setTargets({ hexes: [...Array(19).keys()].filter((h) => h !== game.board.robber) }, ({ hex }) => act({ type: 'moveRobber', player: human, hex }));
+  if (ph === 'robber') return board.setTargets({ hexes: legalRobberHexes(game, human) }, ({ hex }) => act({ type: 'moveRobber', player: human, hex }));
   if (ph === 'steal') {
     const vs = GEO.hexes[game.board.robber].corners.filter((v) => game.buildings[v] && game.stealCandidates.includes(game.buildings[v].player));
     return board.setTargets({ vertices: vs }, ({ vertex }) => act({ type: 'steal', player: human, victim: game.buildings[vertex].player }));
@@ -738,7 +738,7 @@ $('#logToggle').addEventListener('click', () => {
 const cog = $('#cogBtn'), menu = $('#settings');
 function syncSettingsForm() {
   $('#setOpp').value = settings.opponents; $('#setDiff').value = settings.difficulty; $('#setSpeed').value = settings.speed;
-  $('#setBoard').value = settings.board; $('#setVp').value = settings.vpTarget; $('#setSound').checked = settings.sound;
+  $('#setBoard').value = settings.board; $('#setVp').value = settings.vpTarget; $('#setSound').checked = settings.sound; $('#setFriendly').checked = settings.friendlyRobber;
 }
 cog.addEventListener('click', (e) => {
   e.stopPropagation();
@@ -750,7 +750,7 @@ cog.addEventListener('click', (e) => {
 document.addEventListener('click', (e) => { if (!menu.hidden && !menu.contains(e.target) && e.target !== cog) { menu.hidden = true; cog.setAttribute('aria-expanded', 'false'); } });
 menu.addEventListener('change', () => {
   settings.opponents = Number($('#setOpp').value); settings.difficulty = $('#setDiff').value; settings.speed = $('#setSpeed').value;
-  settings.board = $('#setBoard').value; settings.vpTarget = Math.max(3, Math.min(20, Number($('#setVp').value) || 10)); settings.sound = $('#setSound').checked;
+  settings.board = $('#setBoard').value; settings.vpTarget = Math.max(3, Math.min(20, Number($('#setVp').value) || 10)); settings.sound = $('#setSound').checked; settings.friendlyRobber = $('#setFriendly').checked;
   sound.enabled = settings.sound;
   if (game) game.levels = game.levels.map((l, i) => (i === human ? l : settings.difficulty));
   saveSettings();

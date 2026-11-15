@@ -102,7 +102,7 @@ export function newGame(opts, rng) {
   for (let i = n - 1; i >= 0; i--) order.push(i);
   const state = {
     v: 1,
-    config: { numPlayers: n, vpTarget: opts.vpTarget || 10, board: opts.board || 'beginner' },
+    config: { numPlayers: n, vpTarget: opts.vpTarget || 10, board: opts.board || 'beginner', friendlyRobber: !!opts.friendlyRobber },
     board,
     players,
     buildings: {}, // vertexId -> { player, type: 'settlement' | 'city' }
@@ -211,6 +211,20 @@ export function legalRoadSpots(state, p) {
     if (ok) out.push(e.id);
   }
   return out;
+}
+
+// Hexes the robber may move to. House rule "friendly robber" (off by default): not next to an opponent
+// with 2 or fewer visible points, unless that leaves nowhere to go.
+export function legalRobberHexes(state, p) {
+  const all = [];
+  for (let h = 0; h < GEO.hexes.length; h++) if (h !== state.board.robber) all.push(h);
+  if (!state.config.friendlyRobber) return all;
+  const visible = (q) => victoryPoints(state, q, false);
+  const ok = all.filter((h) => GEO.hexes[h].corners.every((v) => {
+    const b = state.buildings[v];
+    return !b || b.player === p || visible(b.player) > 2;
+  }));
+  return ok.length ? ok : all;
 }
 
 export function harbourRatios(state, p) {
@@ -580,6 +594,7 @@ function apply(state, a, rng, events) {
       const h = a.hex;
       if (!Number.isInteger(h) || h < 0 || h >= 19) return 'Bad hex';
       if (h === state.board.robber) return 'The robber must move';
+      if (!legalRobberHexes(state, p).includes(h)) return 'Friendly robber: not next to a player with 2 points or fewer';
       const from = state.board.robber;
       state.board.robber = h;
       events.push({ type: 'robber', player: p, from, to: h });

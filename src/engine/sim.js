@@ -2,8 +2,8 @@
 import { newGame, step, actorsNeeded } from './rules.js';
 import { botAction } from './bots.js';
 
-export function playGame({ seed, rng, numPlayers = 4, board = 'variable', levels, maxActions = 20000, check } = {}) {
-  const state = newGame({ numPlayers, board }, rng);
+export function playGame({ seed, rng, numPlayers = 4, board = 'variable', levels, maxActions = 20000, check, friendlyRobber = false } = {}) {
+  const state = newGame({ numPlayers, board, friendlyRobber }, rng);
   let actions = 0;
   while (state.phase !== 'gameOver') {
     const who = actorsNeeded(state);

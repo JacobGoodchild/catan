@@ -435,3 +435,15 @@ test('starting set-up for beginners: fixed pieces, starred settlements pay, dist
   for (const p of s.players) assert.equal(handTotal(s.hidden.hands[p.id]), 3);
   for (const [e, p] of Object.entries(s.roads)) assert.ok(GEO.edges[e].v.some((v) => s.buildings[v] && s.buildings[v].player === p));
 });
+
+test('house rule friendly robber (off by default) keeps the robber away from players on 2 points or fewer', () => {
+  const s = mainGame();
+  assert.equal(s.config.friendlyRobber, false);
+  s.config.friendlyRobber = true;
+  s.phase = 'robber'; s.robberReturn = 'main';
+  const h = hexIndex(-1, -1);
+  put(s, 1, GEO.hexes[h].corners[0]); put(s, 1, GEO.hexes[hexIndex(2, 0)].corners[3]);
+  bad(s, { type: 'moveRobber', player: 0, hex: h }, /Friendly/);
+  put(s, 1, GEO.hexes[hexIndex(0, 2)].corners[3]); // now 3 points
+  ok(s, { type: 'moveRobber', player: 0, hex: h });
+});

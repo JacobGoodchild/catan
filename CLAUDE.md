@@ -2,7 +2,7 @@
 
 ## Summary (latest checkpoint)
 
-**Done:** a complete, playable game against 2 or 3 computer players, start to finish, on the live site. The rules engine is pure logic with one `step(state, action)` entry point, 26 rule tests and a 2,000-game bot simulation (all pass). Full games have also been played through the real browser interface by an automated clicker, with no errors. The board, pieces, tokens, harbours, robber and cards are drawn in SVG to match the 5th edition. The dice are 3D (three.js + cannon-es) with fair results from `crypto`. There are card flight animations, a collapsible log, trading with the bank, harbours and players (including counter-offers both ways), settings behind the cog, and automatic save and resume.
+**Done:** a complete, playable game against 2 or 3 computer players, start to finish, on the live site. The rules engine is pure logic with one `step(state, action)` entry point, 27 rule tests and a 2,000-game bot simulation (all pass). Full games have also been played through the real browser interface by an automated clicker, with no errors. The board, pieces, tokens, harbours, robber and cards are drawn in SVG to match the 5th edition. The dice are 3D (three.js + cannon-es) with fair results from `crypto`. There are card flight animations, a collapsible log, trading with the bank, harbours and players (including counter-offers both ways), settings behind the cog, and automatic save and resume.
 
 **Still to do:** see the unticked items below. Mainly: more art polish (resource card pictures, development card illustrations), smarter Hard bots, a fuller tablet layout, and more play-testing by hand.
 
@@ -45,8 +45,8 @@
 - [x] Starting Set-up for Beginners option (fixed pieces)
 - [x] Direct bank/harbour trade row; incoming offers in the prompt bar, not a modal
 - [x] Keyboard shortcuts: R roll, E end turn, T trade, D development card (shown in button tooltips)
-- [ ] Optional house rules (none yet; all would be off by default)
-- [ ] Dark theme for the interface (groundwork has one; not attempted)
+- [x] House rule: Friendly robber (off by default). More could follow the same pattern: a flag in `state.config`, checked in `step`.
+- [x] Dark theme for the interface via `prefers-color-scheme` (board and cards keep their real colours)
 
 ## Rules decisions
 
@@ -55,6 +55,7 @@
 - **Variable map.** Terrain shuffled; harbours shuffled onto the 9 fixed frame positions; number tokens laid A–R from a random corner, anticlockwise towards the centre, skipping the desert (Almanac, "Set-up, Variable").
 - **Robbing.** Any opponent with a building on the robber's hex can be chosen, even with no cards (Almanac: "If that player has no cards, you get nothing"). If only one such opponent, they're robbed automatically.
 - **Win check.** Only for the player whose turn it is, after each of their actions (including the roll). Hidden VP cards count.
+- **Friendly robber (house rule, off).** Counts visible points only (not hidden VP cards). If every hex is ruled out, any hex is allowed.
 - **Maritime trade.** One card received per trade action (4:1, 3:1 or 2:1). Repeat to trade more. You can't receive the type you give.
 
 ## Online play later

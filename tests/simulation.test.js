@@ -14,7 +14,7 @@ test(`${GAMES} complete bot games finish with consistent cards`, () => {
     const n = seed % 3 === 0 ? 3 : 4;
     const levels = Array.from({ length: n }, (_, i) => LEVELS[(seed + i) % 3]);
     const { state } = playGame({
-      seed, rng, numPlayers: n, board: seed % 5 === 0 ? 'beginner' : 'variable', levels,
+      seed, rng, numPlayers: n, board: seed % 5 === 0 ? 'beginner' : seed % 11 === 0 ? 'beginnerStart' : 'variable', levels, friendlyRobber: seed % 7 === 0,
       check: (s) => {
         for (const r of RESOURCES) {
           const held = s.hidden.hands.reduce((a, h) => a + h[r], 0);

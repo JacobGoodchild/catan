@@ -5,7 +5,7 @@ import { GEO } from './geometry.js';
 import { PIPS } from './geometry.js';
 import {
   RESOURCES, TERRAIN_RESOURCE, COSTS, viewFor, legalSettlementSpots, legalRoadSpots, legalCitySpots,
-  harbourRatios, canAfford, handTotal, victoryPoints, longestRoadFor,
+  harbourRatios, canAfford, handTotal, victoryPoints, longestRoadFor, legalRobberHexes,
 } from './rules.js';
 
 const LEVELS = { easy: { noise: 0.6, trade: false, plan: false }, normal: { noise: 0.15, trade: true, plan: true }, hard: { noise: 0.02, trade: true, plan: true } };
@@ -164,8 +164,9 @@ export function publicVP(view, p) {
 function robberHex(view, p, rng, level) {
   const lead = leader(view, p);
   let best = null, bs = -Infinity;
+  const allowed = legalRobberHexes(view, p);
   view.board.hexes.forEach((h, idx) => {
-    if (idx === view.board.robber) return;
+    if (!allowed.includes(idx)) return;
     let s = 0;
     const pips = h.number ? PIPS[h.number] : 0;
     for (const v of GEO.hexes[idx].corners) {
