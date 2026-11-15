@@ -171,8 +171,8 @@ function handleEvents(events) {
         break;
       case 'trade': addLog(`${subj(e.player)} traded ${cardsText(e.give)} for ${cardsText(e.get)} with ${e.with === human ? 'you' : nameOf(e.with)}.`); sound.play('card'); break;
       case 'cancelTrade': break;
-      case 'longestRoad': addLog(e.to === null ? 'Longest Road is set aside.' : `${subj(e.to)} ${e.to === human ? 'take' : 'takes'} Longest Road.`, 'special'); break;
-      case 'largestArmy': addLog(`${subj(e.to)} ${e.to === human ? 'take' : 'takes'} Largest Army.`, 'special'); break;
+      case 'longestRoad': flySpecial('longestRoad', e.from, e.to); addLog(e.to === null ? 'Longest Road is set aside.' : `${subj(e.to)} ${e.to === human ? 'take' : 'takes'} Longest Road.`, 'special'); break;
+      case 'largestArmy': flySpecial('largestArmy', e.from, e.to); addLog(`${subj(e.to)} ${e.to === human ? 'take' : 'takes'} Largest Army.`, 'special'); break;
       case 'turn': addLog(`${possessive(e.player)} turn.`, 'turn'); break;
       case 'win': addLog(`${subj(e.player)} ${e.player === human ? 'win' : 'wins'} with ${e.vp} points.`, 'win'); break;
     }
@@ -457,6 +457,14 @@ function flyBetween(from, to, res, faceUp) {
   const a = from === human ? handTarget(res) : playerTarget(from);
   const b = to === human ? handTarget(res) : playerTarget(to);
   flyCard(faceUp ? resourceCard(res) : cardBack(), a, b, { duration: 800 });
+}
+function flySpecial(kind, from, to) {
+  const at = (p) => {
+    if (p === null) return centreOf($('#bank'));
+    const el = document.querySelector(`.player[data-player="${p}"]`);
+    return el ? centreOf(el) : null;
+  };
+  flyCard(specialCard(kind), at(from), at(to), { duration: 1000 });
 }
 function showPlayedCard(type) {
   if (reduceMotion) return;

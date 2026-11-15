@@ -13,8 +13,8 @@
   --accent-soft: #e2efed;
   --error: #a2262b;
   --radius: 8px;
-  --card-w: 64px;
-  --card-h: 92px;
+  --card-w: 70px;
+  --card-h: 100px;
   --parch: #f3e9cf;
   --parch-edge: #c9b383;
   color-scheme: light;
@@ -268,17 +268,20 @@ button { font: inherit; color: inherit; }
 }
 
 /* ---------- Dialogs and settings ---------- */
-.dialog { border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; min-width: 340px; max-width: min(720px, 94vw); background: var(--surface); color: var(--text); box-shadow: 0 12px 40px rgba(0,0,0,.2); }
+.dialog { border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; min-width: 340px; max-width: min(760px, 96vw); background: var(--surface); color: var(--text); box-shadow: 0 12px 40px rgba(0,0,0,.2); }
 .dialog::backdrop { background: rgba(40, 34, 24, .25); }
 .dialog-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
 .dialog-head h2 { font-size: 17px; margin: 0; font-weight: 600; }
 .dialog-note { color: var(--text-muted); margin: 0 0 12px; }
 .dialog-foot { display: flex; gap: 8px; align-items: center; margin-top: 14px; }
 .dialog-foot .spacer, .dialog-foot > span:first-child { flex: 1; color: var(--text-muted); }
-.steppers { display: flex; gap: 8px; flex-wrap: wrap; }
+.steppers { display: flex; gap: 6px; flex-wrap: nowrap; }
 .stepper { display: flex; flex-direction: column; align-items: center; gap: 4px; }
-.stepper .card { --card-w: 52px; --card-h: 74px; }
-.step-ctl { display: flex; align-items: center; gap: 4px; }
+.stepper .card { --card-w: 46px; --card-h: 66px; }
+.stepper .card .card-badge { width: 18px; height: 18px; }
+.stepper .card .card-badge svg { width: 14px; height: 14px; }
+.step-ctl { display: flex; align-items: center; gap: 2px; }
+.step-ctl .icon-button.small { width: 20px; height: 22px; font-size: 14px; }
 .step-ctl span { min-width: 16px; text-align: center; font-weight: 600; }
 .trade-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
 .ratios { display: flex; gap: 12px; margin-top: 12px; color: var(--text-muted); font-size: 12px; }

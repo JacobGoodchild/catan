@@ -131,6 +131,7 @@ function goal(view, p) {
   return 'dev';
 }
 
+function ctr0(r, view) { for (const [k, v] of Object.entries(view.trade.responses)) if (v === r) return k; return 0; }
 function needs(hand, cost) {
   const n = {};
   for (const [k, v] of Object.entries(cost)) if (hand[k] < v) n[k] = v - hand[k];
@@ -192,7 +193,7 @@ function chooseDiscard(view, p, count) {
 export function judgeTrade(view, p, offer, level) {
   const L = LEVELS[level];
   const from = offer.from;
-  if (publicVP(view, from) >= view.config.vpTarget - 2) return 'reject';
+  if (publicVP(view, from) >= view.config.vpTarget - (level === 'hard' ? 3 : 2)) return 'reject';
   const hand = view.hidden.hands[p];
   if (!canAfford(hand, offer.get)) return 'reject';
   const g = goal(view, p);
@@ -212,13 +213,16 @@ export function judgeTrade(view, p, offer, level) {
     const spare = hand[k] - (cost[k] || 0);
     lossV += n * (spare >= n ? 0.7 : 1.7);
   }
-  if (gainV >= lossV + (L.plan ? 0.2 : -0.3)) return 'accept';
-  // Counter: ask for one more of something I need, if they asked me for spare cards.
-  if (L.trade && gainV > 0 && Object.values(offer.give).reduce((a, b) => a + b, 0) === 1) {
-    const surplus = RESOURCES.filter((r) => hand[r] - (cost[r] || 0) >= 1 && !(offer.give[r] > 0));
-    const wantR = Object.keys(offer.give)[0];
-    if (surplus.length && Object.keys(offer.get).every((k) => surplus.includes(k))) return 'reject';
-    void wantR;
+  if (gainV >= lossV + (level === 'hard' ? 0.6 : L.plan ? 0.2 : -0.3)) return 'accept';
+  // Counter-offer: they want something I can't spare, but what they give is useful to me.
+  // Offer my most plentiful spare resource instead (same number of cards), keeping what they give.
+  if (L.trade && gainV > 0) {
+    const asked = Object.values(offer.get).reduce((x, y) => x + y, 0);
+    const spare = RESOURCES
+      .filter((r) => !(offer.give[r] > 0) && hand[r] - (cost[r] || 0) >= asked)
+      .sort((x, y) => (hand[y] - (cost[y] || 0)) - (hand[x] - (cost[x] || 0)));
+    const alt = spare.find((r) => JSON.stringify({ [r]: asked }) !== JSON.stringify(offer.get));
+    if (alt) return { give: { ...offer.give }, get: { [alt]: asked } };
   }
   return 'reject';
 }
@@ -270,6 +274,14 @@ export function botAction(state, p, rng = Math.random, level = 'normal') {
   if (view.trade && view.trade.from === p) {
     const acc = Object.entries(view.trade.responses).find(([, r]) => r === 'accept');
     if (acc) return { type: 'acceptTrade', player: p, with: +acc[0] };
+    const g0 = goal(view, p);
+    const c0 = COSTS[g0] || COSTS.dev;
+    const ctr = Object.entries(view.trade.responses).find(([, r]) => r && typeof r === 'object'
+      && canAfford(hand, r.give)
+      && Object.entries(r.get).some(([k]) => (c0[k] || 0) > hand[k])
+      && Object.entries(r.give).every(([k, n]) => hand[k] - n >= (c0[k] || 0) - 0)
+      && publicVP(view, +ctr0(r, view)) < view.config.vpTarget - 2);
+    if (ctr) return { type: 'acceptTrade', player: p, with: +ctr[0] };
     return { type: 'cancelTrade', player: p };
   }
 
