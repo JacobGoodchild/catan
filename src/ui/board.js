@@ -1,6 +1,6 @@
 // Renders the board as one SVG and handles clicks on highlighted spots.
 import { GEO, hexCentre } from '../engine/geometry.js';
-import { terrainArt, numberToken, harbour, settlementSVG, citySVG, roadSVG, robberSVG, hexPoints } from './art.js';
+import { terrainArt, numberToken, harbour, settlementSVG, citySVG, roadSVG, robberSVG, hexPoints, sharedDefs } from './art.js';
 
 const S = 100; // hex size in SVG units
 export const hexXY = (i) => { const h = GEO.hexes[i]; const [x, y] = hexCentre(h.q, h.r); return [x * S, y * S]; };
@@ -55,7 +55,13 @@ export function createBoard(svg) {
     }
     // Number tokens.
     state.board.hexes.forEach((h, i) => { if (h.number) { const [x, y] = hexXY(i); parts.push(numberToken(h.number, x, y)); } });
-    $('#b-static').innerHTML = parts.join('');
+    // Draw the static layer once as an image, so its texture filters aren't recomputed on every change.
+    const vb = svg.getAttribute('viewBox').split(' ').map(Number);
+    const doc = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${vb.join(' ')}" width="${vb[2] * 2}" height="${vb[3] * 2}"><defs>${sharedDefs()}</defs>${parts.join('')}</svg>`;
+    const url = URL.createObjectURL(new Blob([doc], { type: 'image/svg+xml' }));
+    $('#b-static').innerHTML = `<image href="${url}" x="${vb[0]}" y="${vb[1]}" width="${vb[2]}" height="${vb[3]}"/>`;
+    if (drawStatic.url) URL.revokeObjectURL(drawStatic.url);
+    drawStatic.url = url;
   }
 
   function render(state) {

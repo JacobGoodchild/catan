@@ -70,6 +70,8 @@ Every change is an action `{ type, player, ... }` passed to `step(state, action,
 
 ## Other decisions
 
+- **Static board drawn once.** Sea, tiles, harbours and tokens are rendered into one SVG image (blob URL) when the board is created; pieces, robber, glows and highlights are live SVG on top. Raised the frame rate with highlights showing from about 42 to 56 in headless Chromium.
+
 - **Dice fairness.** `cryptoDie()` rejection-samples `crypto.getRandomValues` for each die. The throw is simulated off-screen with cannon-es, then the die faces are renumbered (opposite faces still add to 7) so the face that lands up shows the chosen value, and the recorded throw is replayed.
 - **Bot names.** Bots are named by colour (Blue, White, Orange) and you are always red, in a random seat, so you don't always go first.
 - **No build step.** three.js 0.160.0 and cannon-es 0.20.0 are vendored in `vendor/`.
