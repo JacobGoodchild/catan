@@ -158,11 +158,9 @@ function handleEvents(events) {
         if (e.resource) flyBetween(victim, thief, e.resource, thief === human || victim === human);
         break;
       }
-      case 'discardPhase': {
-        const who = Object.entries(e.pending).map(([p, n]) => `${nameOf(+p)} ${n}`).join(', ');
-        addLog(`Seven. Discards: ${who}.`);
+      case 'discardPhase':
+        if (e.pending[human]) addLog(`You must discard ${e.pending[human]} cards.`, 'hint');
         break;
-      }
       case 'discard': addLog(`${subj(e.player)} discarded ${plural(e.count, 'card')}.`); break;
       case 'bankTrade': addLog(`${subj(e.player)} traded ${cardsText(e.give)} for ${cardsText(e.get)} ${e.ratio < 4 ? 'at a harbour' : 'with the bank'}.`); sound.play('card'); break;
       case 'offerTrade': addLog(`${subj(e.player)} ${e.player === human ? 'offer' : 'offers'} ${cardsText(e.give)} for ${cardsText(e.get)}.`); break;
@@ -395,9 +393,16 @@ function renderPrompt() {
   else if (me && mode) html = `Choose where to build. <button class="button small" data-cancel>Cancel</button>`;
   else if (game.phase === 'discard') html = 'Waiting for discards.';
   else if (game.trade && game.trade.from === human) html = tradeStatusHtml();
+  else if (game.trade && game.trade.responses[human] === undefined && game.phase !== 'gameOver') {
+    const t = game.trade;
+    const canAcc = canAfford(game.hidden.hands[human], t.get);
+    html = `${game.players[t.from].name} offers ${cardsText(t.give)} for your ${cardsText(t.get)}.
+      <button class="button small primary" data-in-accept ${canAcc ? '' : 'disabled'}>Accept</button>
+      <button class="button small" data-in-reject>Decline</button>
+      <button class="button small" data-in-counter>Counter-offer</button>`;
+  }
   el.hidden = !html;
   el.innerHTML = html;
-  if (!AUTO && game.trade && game.trade.from !== human && game.trade.responses[human] === undefined && game.phase !== 'gameOver') openIncomingTrade();
 }
 
 // ---------- Card animations ----------
@@ -605,13 +610,12 @@ function openIncomingTrade() {
   incomingShown = key;
   const hand = game.hidden.hands[human];
   const canAcc = canAfford(hand, t.get);
-  dlg.dataset.locked = '1';
   const counter = { give: { ...t.give }, get: { ...t.get } };
   const draw = () => {
-    openDialog(`<div class="dialog-head"><h2>${game.players[t.from].name} offers a trade</h2></div>
+    openDialog(`<div class="dialog-head"><h2>${game.players[t.from].name} offers a trade</h2><button class="icon-button" data-x aria-label="Close">×</button></div>
       <div class="offer"><div><div class="panel-title">You get</div><div class="offer-cards">${cardsRow(t.give)}</div></div>
       <div><div class="panel-title">You give</div><div class="offer-cards">${cardsRow(t.get)}</div></div></div>
-      <details class="counter"><summary>Counter-offer</summary>
+      <details class="counter" open><summary>Counter-offer</summary>
         <div class="trade-cols"><div><div class="panel-title">You give</div><div class="steppers">${RESOURCES.map((r) => stepper('cg', r, counter.get[r] || 0, hand[r])).join('')}</div></div>
         <div><div class="panel-title">You get</div><div class="steppers">${RESOURCES.map((r) => stepper('cw', r, counter.give[r] || 0, 19)).join('')}</div></div></div>
         <div class="dialog-foot"><span class="spacer"></span><button class="button" data-counter>Send counter-offer</button></div>
@@ -620,7 +624,8 @@ function openIncomingTrade() {
       const b = ev.target.closest('button');
       if (!b) return;
       const d = b.dataset;
-      const respond = (response) => { delete dlg.dataset.locked; closeDialog(); act({ type: 'respondTrade', player: human, response }); };
+      if (d.x !== undefined) { closeDialog(); return; }
+      const respond = (response) => { closeDialog(); act({ type: 'respondTrade', player: human, response }); };
       if (d.acc !== undefined) return respond('accept');
       if (d.reject !== undefined) return respond('reject');
       if (d.counter !== undefined) {
@@ -634,9 +639,7 @@ function openIncomingTrade() {
       if (d.cgMinus) counter.get[d.cgMinus]--;
       if (d.cwPlus) { counter.give[d.cwPlus] = (counter.give[d.cwPlus] || 0) + 1; counter.get[d.cwPlus] = 0; }
       if (d.cwMinus) counter.give[d.cwMinus]--;
-      const open = dlg.querySelector('details.counter')?.open;
       draw();
-      if (open) dlg.querySelector('details.counter').open = true;
     });
   };
   draw();
@@ -693,6 +696,9 @@ $('#prompt').addEventListener('click', (ev) => {
   if (b.dataset.cancel !== undefined) { mode = null; render(); }
   if (b.dataset.accept) act({ type: 'acceptTrade', player: human, with: +b.dataset.accept });
   if (b.dataset.cancelTrade !== undefined) act({ type: 'cancelTrade', player: human });
+  if (b.dataset.inAccept !== undefined) act({ type: 'respondTrade', player: human, response: 'accept' });
+  if (b.dataset.inReject !== undefined) act({ type: 'respondTrade', player: human, response: 'reject' });
+  if (b.dataset.inCounter !== undefined) { incomingShown = null; openIncomingTrade(); }
 });
 document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && mode) { mode = null; render(); } });
 

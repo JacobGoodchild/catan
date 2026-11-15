@@ -351,7 +351,8 @@ export function botAction(state, p, rng = Math.random, level = 'normal') {
       }
     }
     // Offer a 1:1 trade to the other players, once per turn.
-    if (L.trade && !view.offersThisTurn) {
+    const missingCount = Object.values(n).reduce((x, y) => x + y, 0);
+    if (L.trade && !view.offersThisTurn && missingCount <= 2) {
       const give = RESOURCES.find((r) => hand[r] - (cost[r] || 0) >= 1 && !wanted.includes(r));
       if (give) {
         return { type: 'offerTrade', player: p, give: { [give]: 1 }, get: { [wanted[0]]: 1 } };
