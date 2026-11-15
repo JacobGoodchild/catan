@@ -358,5 +358,14 @@ export function botAction(state, p, rng = Math.random, level = 'normal') {
       }
     }
   }
+  // Hard: don't end the turn holding more than 7 cards if a bank trade can shed one usefully.
+  if (level === 'hard' && handTotal(hand) > 7) {
+    for (const r of RESOURCES.slice().sort((x, y) => hand[y] - hand[x])) {
+      if (hand[r] >= ratios[r]) {
+        const get = RESOURCES.filter((w) => w !== r && view.bank[w] > 0).sort((x, y) => ((cost[y] || 0) - hand[y]) - ((cost[x] || 0) - hand[x]))[0];
+        if (get) return { type: 'bankTrade', player: p, give: r, get };
+      }
+    }
+  }
   return { type: 'endTurn', player: p };
 }

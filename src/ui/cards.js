@@ -32,7 +32,11 @@ export function cardBack(kind = 'res') {
   if (kind === 'dev') {
     return `<div class="card back dev-back"><svg viewBox="-20 -20 40 40"><circle r="13" fill="#e7b62c" stroke="#8a6416" stroke-width="1"/><path d="M-13,0 A13,13 0 0 0 13,0 Z" fill="#c0262d"/><path d="M-11.3,6.5 A13,13 0 0 0 11.3,6.5 Z" fill="#1f5fae"/><circle r="13" fill="none" stroke="#6b4a1e" stroke-width="1.4"/></svg></div>`;
   }
-  return `<div class="card back res-back"><svg viewBox="-20 -28 40 56"><path d="M-6,-16 C2,-14 8,-4 4,6 C1,14 -6,18 -2,24" stroke="#3a6a2c" stroke-width="9" fill="none" stroke-linecap="round"/><path d="M-6,-16 C2,-14 8,-4 4,6 C1,14 -6,18 -2,24" stroke="#c8a54a" stroke-width="3" fill="none" stroke-linecap="round"/></svg></div>`;
+  return `<div class="card back res-back"><svg viewBox="-20 -28 40 56">
+    <path d="M-4,-22 C4,-24 10,-16 9,-8 C14,-2 12,6 7,10 C9,16 4,23 -3,22 C-9,21 -8,14 -11,9 C-15,4 -12,-3 -9,-7 C-12,-13 -10,-20 -4,-22 Z" fill="#d9c27a" stroke="#f3e3a8" stroke-width="1.2"/>
+    <path d="M-2,-16 C3,-15 6,-10 5,-5 C8,-1 6,4 3,7 C4,12 1,16 -3,15 C-6,14 -5,9 -7,6 C-9,2 -7,-3 -5,-6 C-7,-10 -6,-15 -2,-16 Z" fill="#6f9a3e"/>
+    <circle cx="0" cy="-2" r="2.4" fill="#a8552a"/><circle cx="-3" cy="8" r="1.8" fill="#8d8aa0"/>
+  </svg></div>`;
 }
 
 function devPicture(type, seed) {
