@@ -9,7 +9,7 @@ import { GEO } from '../engine/geometry.js';
 import { createBoard } from './board.js';
 import { sharedDefs, resourceIcon, PLAYER_COLOURS, settlementSVG } from './art.js';
 import { resourceCard, devCard, cardBack, buildingCostsCard, specialCard, RES_NAME, DEV_INFO } from './cards.js';
-import { rollDice } from './dice.js';
+import { rollDice, preloadDice } from './dice.js';
 import { sound } from './sound.js';
 
 const $ = (s) => document.querySelector(s);
@@ -778,5 +778,6 @@ $('#newGameBtn').addEventListener('click', () => {
 
 // ---------- Boot ----------
 sound.enabled = settings.sound;
+setTimeout(preloadDice, 2000);
 if (!AUTO && resume()) { renderLog(); addLog('Game resumed.'); advance(); } else startGame();
 window.__catan = { get game() { return game; }, get human() { return human; }, act, render, showGameOver, COLOURS };

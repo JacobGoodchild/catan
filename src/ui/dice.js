@@ -17,6 +17,10 @@ async function load3d() {
   return three;
 }
 
+export function preloadDice() {
+  if (!matchMedia('(prefers-reduced-motion: reduce)').matches) load3d();
+}
+
 export async function rollDice(dice, { speed = 1, sound: on = false } = {}) {
   const el = document.getElementById('dice');
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
