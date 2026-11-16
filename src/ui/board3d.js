@@ -74,7 +74,7 @@ function landHeight(type, x, z, seed) {
   const m = edge * cm;
   switch (type) {
     case 'mountains': { const n = fbm(x * 3.4 + 9, z * 3.4, seed, 4); const ridge = 1 - Math.abs(2 * n - 1); return m * fm * (0.08 + 0.6 * ridge * ridge); }
-    case 'hills': return m * (0.55 + 0.45 * fm) * 0.3 * Math.pow(fbm(x * 2.4, z * 2.4, seed, 3), 1.4) * 1.7;
+    case 'hills': { const n = fbm(x * 4.2 + 3, z * 4.2, seed, 3); return m * (0.45 + 0.55 * fm) * (0.04 + 0.36 * smooth(0.38, 0.72, n)); }
     case 'desert': return m * 0.05 * (0.5 + 0.5 * Math.sin(x * 10 + z * 5 + fbm(x * 2, z * 2, seed, 2) * 7));
     case 'pasture': return m * 0.08 * fbm(x * 2.5, z * 2.5, seed, 2);
     case 'forest': return m * 0.07 * fbm(x * 3, z * 3, seed, 2);
@@ -98,7 +98,7 @@ function landGeometry(type, seed) {
     let c = [base[0] * k, base[1] * k, base[2] * k];
     if (type === 'mountains') { const sn = smooth(0.3, 0.42, h + 0.05 * vnoise(x * 9, z * 9, seed)); c = c.map((v) => v + (1.05 - v) * sn); const g = smooth(0.06, 0, h) * 0.35; c = [c[0] * (1 - g) + 0.38 * g, c[1] * (1 - g) + 0.5 * g, c[2] * (1 - g) + 0.3 * g]; }
     if (type === 'fields') { const st = Math.sin((x * 0.8 + z * 0.6) * 52) > 0 ? 1.06 : 0.86; c = c.map((v) => v * st); }
-    if (type === 'hills') { const t = smooth(0, 0.2, h); c = c.map((v, i) => v * (0.8 + 0.3 * t) + (i === 1 ? 0.05 * (1 - t) : 0)); }
+    if (type === 'hills') { const t = smooth(0.02, 0.22, h); c = c.map((v, i) => v * (0.8 + 0.3 * t) + (i === 1 ? 0.05 * (1 - t) : 0)); }
     if (type === 'pasture') { const t = vnoise(x * 5, z * 5, seed + 9); c = [c[0] * (0.9 + 0.2 * t), c[1], c[2] * (0.8 + 0.3 * t)]; }
     col.push(...c);
   }
@@ -206,7 +206,7 @@ function resourceModel(res) {
   const g = new THREE.Group(); const r = rng(res.length * 77 + 5);
   if (res === 'brick') {
     const geo = new THREE.BoxGeometry(0.5, 0.15, 0.23); const mat = std('#c9452a', 'clay');
-    const put = (x, y, z, rot) => { const m = shadowed(new THREE.Mesh(geo, mat)); m.position.set(x, y, z); m.rotation.y = rot + (r() - 0.5) * 0.12; g.add(m); };
+    const put = (x, y, z, rot) => { const mm = mat.clone(); mm.color.offsetHSL((r() - 0.5) * 0.03, 0, (r() - 0.5) * 0.12); const m = shadowed(new THREE.Mesh(geo, mm)); m.position.set(x, y, z); m.rotation.y = rot + (r() - 0.5) * 0.12; g.add(m); };
     put(0, 0.075, -0.13, 0); put(0, 0.075, 0.13, 0); put(-0.13, 0.23, 0, Math.PI / 2); put(0.13, 0.23, 0, Math.PI / 2); put(0.02, 0.385, 0, 0.25);
   } else if (res === 'lumber') {
     const geo = new THREE.CylinderGeometry(0.13, 0.13, 0.9, 18); geo.rotateZ(Math.PI / 2);
@@ -415,7 +415,7 @@ export function createBoard3D(el) {
       const mx = (x1 + x2) / 2, mz = (z1 + z2) / 2, len = Math.hypot(mx, mz), nx = mx / len, nz = mz / len;
       const px = mx + nx * 0.8, pz = mz + nz * 0.8;
       for (const [vx, vz] of [[x1, z1], [x2, z2]]) {
-        const ex = px + (vx - mx) * 0.5 - nx * 0.42, ez = pz + (vz - mz) * 0.5 - nz * 0.42; const L = Math.hypot(ex - vx, ez - vz);
+        const ex = px + (vx - mx) * 0.4 - nx * 0.28, ez = pz + (vz - mz) * 0.4 - nz * 0.28; const L = Math.hypot(ex - vx, ez - vz);
         const sx = vx + ((ex - vx) / L) * 0.2, sz = vz + ((ez - vz) / L) * 0.2; const L2 = L - 0.2;
         const j = new THREE.Mesh(new THREE.BoxGeometry(L2, 0.035, 0.085), plank); j.position.set((sx + ex) / 2, 0.05, (sz + ez) / 2); j.rotation.y = -Math.atan2(ez - sz, ex - sx); j.castShadow = true; j.receiveShadow = true; G.add(j);
       }
