@@ -1,5 +1,14 @@
 # Catan — working notes
 
+## Session 3: real 3D board, no drawn artwork
+
+- **Board is a three.js scene** (`src/ui/board3d.js`): sculpted terrain tiles (height map per terrain, flat at the rim and under the number token), instanced trees, sheep, haystacks and rocks, a painted sea frame, harbour markers with jetties, bevelled wooden pieces, and a lathe-turned robber that stands in the middle of its hex (on the number token). Fixed camera tilted 27 degrees, fitted and centred to the board area on every resize; renders only when something changes or animates.
+- **Clicking**: legal spots are HTML buttons in `.b-targets`, positioned by projecting the 3D point to the screen. The old `setTargets / glowHexes / screenPos / render` interface is unchanged, so `app.js` barely changed.
+- **No SVG artwork left.** `board.js` and the drawing code in `art.js` are deleted. Resource pictures and piece icons are small 3D renders made at start-up (`resImage`, `pieceImage`, cached as data URLs). Development and special cards use cropped open-access museum paintings in `assets/art/`. Surface photos in `assets/tex/` are CC0 from Poly Haven. Sources are listed in `assets/CREDITS.md`.
+- **Sizes**: pieces are scaled to roughly real proportions (road about half an edge) so they no longer overlap each other or the tokens.
+- Needs WebGL. There is no flat fallback for the board any more.
+- Next for 3D: free camera (drag to orbit), animated water, 3D dice thrown onto the same table.
+
 ## Session 2: interface overhaul
 
 - **Main menu** on every visit (`#home`): play against the computer (opponents, difficulty, board, points to win), Continue game when a save exists, and a "Play with friends" card marked as not built yet. The house button in the top left returns to it; the game pauses while it is open.
