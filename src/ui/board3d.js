@@ -206,7 +206,7 @@ function resourceModel(res) {
   const g = new THREE.Group(); const r = rng(res.length * 77 + 5);
   if (res === 'brick') {
     const geo = new THREE.BoxGeometry(0.5, 0.15, 0.23); const mat = std('#c9452a', 'clay');
-    const put = (x, y, z, rot) => { const mm = mat.clone(); mm.color.offsetHSL((r() - 0.5) * 0.03, 0, (r() - 0.5) * 0.12); const m = shadowed(new THREE.Mesh(geo, mm)); m.position.set(x, y, z); m.rotation.y = rot + (r() - 0.5) * 0.12; g.add(m); };
+    const put = (x, y, z, rot) => { const mm = mat.clone(); mm.color.offsetHSL((r() - 0.5) * 0.02, 0, (r() - 0.5) * 0.06); const m = shadowed(new THREE.Mesh(geo, mm)); m.position.set(x, y, z); m.rotation.y = rot + (r() - 0.5) * 0.12; g.add(m); };
     put(0, 0.075, -0.13, 0); put(0, 0.075, 0.13, 0); put(-0.13, 0.23, 0, Math.PI / 2); put(0.13, 0.23, 0, Math.PI / 2); put(0.02, 0.385, 0, 0.25);
   } else if (res === 'lumber') {
     const geo = new THREE.CylinderGeometry(0.13, 0.13, 0.9, 18); geo.rotateZ(Math.PI / 2);
