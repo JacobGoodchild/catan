@@ -6,15 +6,15 @@ import {
 import { botAction, publicVP } from '../engine/bots.js';
 import { cryptoRandom, cryptoDie } from '../engine/rng.js';
 import { GEO } from '../engine/geometry.js';
-import { createBoard } from './board.js';
-import { sharedDefs, resourceIcon, PLAYER_COLOURS, settlementSVG, pieceIcon } from './art.js';
-import { resourceCard, devCard, cardBack, buildingCostsCard, specialCard, RES_NAME, DEV_INFO } from './cards.js';
+import { createBoard3D, pieceIcon, pieceImage, assetsReady } from './board3d.js';
+import { PLAYER_COLOURS } from './art.js';
+import { resourceCard, miniRes, devCard, cardBack, buildingCostsCard, specialCard, RES_NAME, DEV_INFO } from './cards.js';
 import { rollDice, preloadDice } from './dice.js';
 import { sound } from './sound.js';
 
 const $ = (s) => document.querySelector(s);
-document.getElementById('defs').innerHTML = `<defs>${sharedDefs()}</defs>`;
-const board = createBoard($('#board'));
+await assetsReady;
+const board = createBoard3D($('#board'));
 const AUTO = new URLSearchParams(location.search).has('auto');
 const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -307,7 +307,7 @@ function renderPlayers() {
     const devs = game.hidden.dev[id].length;
     const active = id === game.current && game.phase !== 'gameOver';
     return `<div class="player panel ${active ? 'active' : ''} ${isMe ? 'me' : ''}" data-player="${id}" style="--pc:${c.base};--pcd:${c.dark};--pct:${pl.colour === 'white' ? '#2b241c' : '#fff'}">
-      <div class="p-head"><svg viewBox="-16 -18 32 32" class="p-icon">${settlementSVG(pl.colour, 0, 0, 1)}</svg>
+      <div class="p-head"><img class="p-icon" src="${pieceImage('settlement', pl.colour)}" alt="">
         <span class="p-name">${isMe ? 'You' : pl.name}${active ? '<span class="p-turn">Playing</span>' : ''}</span>
         <span class="p-vp" title="Victory points${isMe ? ' (including hidden cards)' : ' (visible)'}">${vp}<small>/${game.config.vpTarget}</small></span></div>
       <div class="p-stats">
@@ -324,7 +324,7 @@ function renderPlayers() {
 function renderBank() {
   const b = game.bank;
   $('#bank').innerHTML = `<div class="panel-title">Bank</div><div class="bank-row">
-    ${RESOURCES.map((r) => `<div class="bank-stack" data-bank="${r}" title="${RES_NAME[r]}: ${b[r]} left"><svg viewBox="-14 -14 28 28">${resourceIcon(r, 0.9)}</svg><span>${b[r]}</span></div>`).join('')}
+    ${RESOURCES.map((r) => `<div class="bank-stack" data-bank="${r}" title="${RES_NAME[r]}: ${b[r]} left">${miniRes(r)}<span>${b[r]}</span></div>`).join('')}
     <div class="bank-stack dev" data-bank="dev" title="Development cards: ${game.devDeckCount} left">${cardBack('dev')}<span>${game.devDeckCount}</span></div>
     </div>
     <div class="bank-special">${game.longestRoad === null ? specialCard('longestRoad') : ''}${game.largestArmy === null ? specialCard('largestArmy') : ''}</div>`;
