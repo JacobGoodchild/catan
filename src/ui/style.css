@@ -585,3 +585,15 @@ body { background: #4a2f1c url("../../assets/tex/table.jpg"); background-size: 5
 .dev-mini span { position: relative; }
 .dev-mini span::after { content: ''; position: absolute; left: 27%; right: 27%; top: 32%; bottom: 32%; background: #e8c65a; clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%); }
 .tile:disabled .piece-icon { filter: none; opacity: .42; }
+@media (max-width: 860px) {
+  .hand { flex-basis: 100%; }
+  .actions { width: 100%; justify-content: space-between; }
+  #board canvas { touch-action: pan-y; }
+}
+.bc-cost .mini-res { width: 17px; height: 22px; }
+.bc-row .bc-cost { gap: 1px; }
+.bc-row .bc-vp { font-size: 9px; white-space: nowrap; }
+.p-special .card.special, .bank-special .card.special { height: 74px; }
+.p-special .card.special .card-pic, .bank-special .card.special .card-pic { height: 30px; flex: none; }
+.p-special .sp-text, .bank-special .sp-text { font-size: 5.5px; white-space: nowrap; }
+.card.special { height: 88px; }

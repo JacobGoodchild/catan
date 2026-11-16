@@ -7,6 +7,8 @@
 - **No SVG artwork left.** `board.js` and the drawing code in `art.js` are deleted. Resource pictures and piece icons are small 3D renders made at start-up (`resImage`, `pieceImage`, cached as data URLs). Development and special cards use cropped open-access museum paintings in `assets/art/`. Surface photos in `assets/tex/` are CC0 from Poly Haven. Sources are listed in `assets/CREDITS.md`.
 - **Sizes**: pieces are scaled to roughly real proportions (road about half an edge) so they no longer overlap each other or the tokens.
 - Needs WebGL. There is no flat fallback for the board any more.
+- **Please test (session 3):** placing pieces by clicking the white markers; dragging the board to look around and double-clicking to reset; a 7 with more than 7 cards; a hand of 15+ cards (it shrinks to fit); a phone or tablet; an older laptop, to see whether the 3D board stays smooth.
+- The dev tools `tools/board-preview.html` and `tools/cards-preview.html` were removed with the SVG art. `?auto` still lets a bot play your seat.
 - **Look around**: drag the board to orbit and tilt, double-click to reset the view.
 - Next for 3D: animated water, dice thrown onto the same table, little ships at the harbours.
 
