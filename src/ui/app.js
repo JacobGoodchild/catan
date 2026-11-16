@@ -14,7 +14,12 @@ import { sound } from './sound.js';
 
 const $ = (s) => document.querySelector(s);
 await assetsReady;
-const board = createBoard3D($('#board'));
+let board;
+try { board = createBoard3D($('#board')); } catch (e) {
+  console.error(e);
+  $('#board').innerHTML = '<p class="no-gl">This game needs WebGL to draw the board. Try another browser or switch on hardware acceleration.</p>';
+  board = { render() {}, setTargets() {}, glowHexes() {}, screenPos() { return [innerWidth / 2, innerHeight / 2]; } };
+}
 const AUTO = new URLSearchParams(location.search).has('auto');
 const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -338,7 +343,7 @@ function renderHand() {
     const n = hand[r];
     const prev = lastHand ? lastHand[r] : n;
     if (!n) continue;
-    const shown = Math.min(n, 5);
+    const shown = Math.min(n, 4);
     let stack = '';
     for (let i = 0; i < shown; i++) stack += `<div class="stack-card" style="--i:${i}">${resourceCard(r)}</div>`;
     html += `<div class="hand-stack ${n > prev ? 'grew' : ''}" data-res="${r}" style="--n:${shown}">${stack}<span class="count">${n}</span></div>`;
@@ -351,7 +356,12 @@ function renderHand() {
     html += `<button class="dev-slot ${canPlay(c) ? 'playable' : ''} ${c.turn === game.turn ? 'new' : ''}" data-play="${c.type}" ${canPlay(c) ? '' : 'disabled'} title="${DEV_INFO[c.type].title}${c.type === 'vp' ? ' (counts automatically)' : c.turn === game.turn ? ' (bought this turn)' : ''}">${devCard(c.type, { index: i })}</button>`;
   });
   html += '</div>';
-  $('#hand').innerHTML = html;
+  const handEl = $('#hand');
+  handEl.innerHTML = html;
+  // Shrink the cards rather than let a big hand run under the buttons.
+  let z = 1.4;
+  handEl.style.setProperty('--hz', z);
+  while (z > 0.55 && handEl.scrollWidth > handEl.clientWidth + 1) { z -= 0.08; handEl.style.setProperty('--hz', z.toFixed(2)); }
   lastHand = { ...hand };
 }
 

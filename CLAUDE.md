@@ -7,7 +7,8 @@
 - **No SVG artwork left.** `board.js` and the drawing code in `art.js` are deleted. Resource pictures and piece icons are small 3D renders made at start-up (`resImage`, `pieceImage`, cached as data URLs). Development and special cards use cropped open-access museum paintings in `assets/art/`. Surface photos in `assets/tex/` are CC0 from Poly Haven. Sources are listed in `assets/CREDITS.md`.
 - **Sizes**: pieces are scaled to roughly real proportions (road about half an edge) so they no longer overlap each other or the tokens.
 - Needs WebGL. There is no flat fallback for the board any more.
-- Next for 3D: free camera (drag to orbit), animated water, 3D dice thrown onto the same table.
+- **Look around**: drag the board to orbit and tilt, double-click to reset the view.
+- Next for 3D: animated water, dice thrown onto the same table, little ships at the harbours.
 
 ## Session 2: interface overhaul
 

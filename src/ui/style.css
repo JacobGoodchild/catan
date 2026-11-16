@@ -433,7 +433,7 @@ body { font-size: 16px; background: #6b4830 var(--wood); }
   background: linear-gradient(rgba(30, 18, 8, .55), rgba(30, 18, 8, .72)); border-top: 1px solid rgba(255, 220, 160, .25);
 }
 .hand { flex: 1; min-width: 0; padding: 14px 0 6px 30px; gap: 22px; min-height: 0; overflow: visible; }
-.hand .res-group, .hand .dev-group { zoom: 1.4; }
+.hand .res-group, .hand .dev-group { zoom: var(--hz, 1.4); }
 .hand-empty { color: #e9dcc0; font-size: 12px; }
 .dev-group { border-left-color: rgba(255, 220, 160, .3); }
 .actions { display: flex; align-items: stretch; gap: 14px; flex: none; flex-wrap: nowrap; }
@@ -491,7 +491,6 @@ body { font-size: 16px; background: #6b4830 var(--wood); }
 @media (max-width: 1250px), (max-height: 760px) {
   .table { grid-template-columns: 236px minmax(0, 1fr) 236px; }
   .left, .side { padding: 10px; }
-  .hand .res-group, .hand .dev-group { zoom: 1.12; }
   .dock { min-height: 140px; padding: 8px 12px 10px; }
   .tile { width: 74px; height: 80px; font-size: 12.5px; }
   .tile .piece-icon { width: 36px; height: 36px; }
@@ -572,3 +571,13 @@ body { background: #4a2f1c url("../../assets/tex/table.jpg"); background-size: 5
 .supply-row .piece-icon { width: 44px; height: 44px; }
 .tile .piece-icon { width: 52px; height: 52px; }
 .tile:disabled .piece-icon { opacity: .5; filter: grayscale(.6); }
+
+.hand { overflow: hidden; padding-top: 16px; }
+.dock { overflow: hidden; }
+.card.dev .card-pic { height: 38px; }
+.card.dev .dev-text { font-size: 5.3px; line-height: 1.16; }
+.card.dev-vp .dev-text { font-size: 7px; }
+
+#board canvas { cursor: grab; touch-action: none; }
+#board canvas:active { cursor: grabbing; }
+.no-gl { position: absolute; inset: 0; display: grid; place-items: center; text-align: center; color: #fff3d6; font-size: 18px; padding: 24px; margin: 0; }

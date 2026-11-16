@@ -290,7 +290,9 @@ export function createBoard3D(el) {
   const scene = new THREE.Scene();
   addLights(scene);
   const camera = new THREE.PerspectiveCamera(26, 1, 0.5, 100);
-  const TILT = (27 * Math.PI) / 180;
+  const TILT0 = (27 * Math.PI) / 180;
+  let TILT = TILT0, az = 0;
+  const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const R_FRAME = 6.05;
   let staticGroup = null, staticKey = null, targetHandler = null, lastTargets = null, needs = false;
   const pieces = new Map(); const pieceGroup = new THREE.Group(); scene.add(pieceGroup);
@@ -308,24 +310,36 @@ export function createBoard3D(el) {
     if (tweens.length) request();
   }
   function request() { if (!needs) { needs = true; requestAnimationFrame(draw); } }
-  function tween(ms, fn) { tweens.push({ t0: performance.now(), ms, fn }); request(); }
+  function tween(ms, fn) { tweens.push({ t0: performance.now(), ms: still ? 1 : ms, fn }); request(); }
 
   const corners = [];
   for (let i = 0; i < 6; i++) { const a = (Math.PI / 3) * i; corners.push(new THREE.Vector3(R_FRAME * Math.cos(a), 0, R_FRAME * Math.sin(a))); corners.push(new THREE.Vector3(4.4 * Math.cos(a), 0.6, 4.4 * Math.sin(a))); }
   function fit() {
     const w = el.clientWidth, h = el.clientHeight; if (!w || !h) return;
     renderer.setSize(w, h, false); camera.aspect = w / h;
-    const tgt = new THREE.Vector3(0, 0, 0.1), dir = new THREE.Vector3(0, Math.cos(TILT), Math.sin(TILT)), v = new THREE.Vector3();
+    const tgt = new THREE.Vector3(0, 0, 0.1), dir = new THREE.Vector3(Math.sin(az) * Math.sin(TILT), Math.cos(TILT), Math.cos(az) * Math.sin(TILT)), v = new THREE.Vector3();
     const span = () => { let lo = 9, hi = -9, mx = 0; for (const c of corners) { v.copy(c).project(camera); lo = Math.min(lo, v.y); hi = Math.max(hi, v.y); mx = Math.max(mx, Math.abs(v.x)); } return [lo, hi, mx]; };
     const aim = (d) => { camera.position.copy(tgt).addScaledVector(dir, d); camera.lookAt(tgt); camera.updateProjectionMatrix(); camera.updateMatrixWorld(); };
     for (let d = 8; d < 80; d += 0.15) {
-      for (let k = 0; k < 4; k++) { aim(d); const [lo, hi] = span(); tgt.z += (lo + hi) * 0.5 * d * Math.tan((camera.fov * Math.PI) / 360) * -1 / Math.cos(TILT); }
+      for (let k = 0; k < 4; k++) { aim(d); const [lo, hi] = span(); const k = ((lo + hi) * 0.5 * d * Math.tan((camera.fov * Math.PI) / 360)) / Math.max(0.5, Math.cos(TILT)); tgt.x -= k * Math.sin(az); tgt.z -= k * Math.cos(az); }
       aim(d); const [lo, hi, mx] = span();
       if (mx < 0.99 && lo > -0.985 && hi < 0.985) break;
     }
     placeTargets(); request();
   }
   new ResizeObserver(fit).observe(el);
+  // Drag the table to look around; double-click to reset the view.
+  let drag = null;
+  canvas.addEventListener('pointerdown', (e) => { drag = { x: e.clientX, y: e.clientY, az, tilt: TILT }; canvas.setPointerCapture(e.pointerId); });
+  canvas.addEventListener('pointermove', (e) => {
+    if (!drag) return;
+    az = drag.az - (e.clientX - drag.x) * 0.006;
+    TILT = Math.max(0.02, Math.min(1.05, drag.tilt - (e.clientY - drag.y) * 0.004));
+    fit();
+  });
+  const endDrag = () => { drag = null; };
+  canvas.addEventListener('pointerup', endDrag); canvas.addEventListener('pointercancel', endDrag);
+  canvas.addEventListener('dblclick', () => { az = 0; TILT = TILT0; fit(); });
 
   function project(x, y, z) {
     const v = new THREE.Vector3(x, y, z).project(camera);
